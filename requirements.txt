@@ -1,0 +1,11 @@
+streamlit
+langchain
+langchain-community
+langchain-openai
+openai
+faiss-cpu
+beautifulsoup4
+pypdf2
+pandas
+requests
+python-dotenv
