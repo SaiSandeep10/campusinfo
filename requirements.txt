@@ -1,11 +1,14 @@
 streamlit
 langchain
 langchain-community
-langchain-openai
-openai
+langchain-google-genai
+google-generativeai
 faiss-cpu
 beautifulsoup4
-pypdf2
+pypdf
+langchain-text-splitters
+langchain-text-splitter
 pandas
 requests
 python-dotenv
+python-docx
