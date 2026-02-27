@@ -12,9 +12,16 @@ PAGES_TO_SCRAPE = [
     "https://www.anits.edu.in/index.html",
     "https://www.anits.edu.in/aboutus.php",
     "https://www.anits.edu.in/depts.php",
+    "https://www.anits.edu.in/admissions.php",
     "https://www.anits.edu.in/tpccontact.php",
     "https://www.anits.edu.in/facilities.php",
+    "https://www.anits.edu.in/hostel.php",
     "https://www.anits.edu.in/clubs.php",
+    "https://www.anits.edu.in/nss.php",
+    "https://www.anits.edu.in/contacts.php",
+    "https://library.anits.edu.in/",
+    "https://cse.anits.edu.in/",
+    "https://it.anits.edu.in/",
 ]
 
 
@@ -30,10 +37,16 @@ def scrape_page(url):
         # Send request like a real browser
         # (some websites block requests without a User-Agent)
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
         }
 
-        response = requests.get(url, headers=headers, timeout=10)
+        session = requests.Session()
+        session.headers.update(headers)
+        response = session.get(url, timeout=10)
 
         # Check if page loaded successfully
         # Status 200 = OK, anything else = problem
