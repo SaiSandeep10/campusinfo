@@ -59,8 +59,7 @@ def scrape_page(url):
 
         # ── Remove unwanted elements ──
         # We don't want navigation menus, scripts, or styling
-        for unwanted in soup(["script", "style", "nav",
-                               "footer", "header", "iframe"]):
+        for unwanted in soup(["script", "style", "nav","footer", "header", "iframe"]):
             unwanted.decompose()  # completely removes these tags
 
         # ── Extract useful text ──
