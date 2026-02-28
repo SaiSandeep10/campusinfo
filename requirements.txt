@@ -7,8 +7,8 @@ faiss-cpu
 beautifulsoup4
 pypdf
 langchain-text-splitters
-langchain-text-splitter
 pandas
 requests
 python-dotenv
 python-docx
+sentence-transformers
