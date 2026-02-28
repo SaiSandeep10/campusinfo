@@ -3,7 +3,7 @@
 
 import os
 from dotenv import load_dotenv
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -172,3 +172,4 @@ if __name__ == "__main__":
 
     print("\n✅ vector_store.py working correctly!")
     print("Next step: Run agent.py")
+    
