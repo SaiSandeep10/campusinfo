@@ -9,6 +9,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
+# ── Base directory (works on both local and Streamlit Cloud) ──
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 # ══════════════════════════════════════════
 # FUNCTION 1 — Load All Text Sources
 # ══════════════════════════════════════════
@@ -18,7 +22,7 @@ def load_all_text():
     all_text = ""
 
     # Load scraped website content
-    website_file = "data/scraped/website.txt"
+    website_file = os.path.join(BASE_DIR, "data/scraped/website.txt")
     if os.path.exists(website_file):
         with open(website_file, "r", encoding="utf-8") as f:
             content = f.read()
@@ -28,7 +32,7 @@ def load_all_text():
         print("  ✗ No website.txt found. Run scraper.py first!")
 
     # Load PDF chunks
-    pdf_chunks_file = "data/scraped/chunks.txt"
+    pdf_chunks_file = os.path.join(BASE_DIR, "data/scraped/chunks.txt")
     if os.path.exists(pdf_chunks_file):
         with open(pdf_chunks_file, "r", encoding="utf-8") as f:
             content = f.read()
@@ -69,7 +73,6 @@ def create_vector_store(chunks):
     print("\nLoading embedding model...")
     print("  (Downloading model first time — ~90MB, takes 1-2 mins)")
 
-    # This model runs on your computer — completely free!
     embeddings = HuggingFaceEmbeddings(
         model_name="all-MiniLM-L6-v2",
         model_kwargs={"device": "cpu"}
@@ -79,11 +82,10 @@ def create_vector_store(chunks):
     print("\nBuilding FAISS index...")
     print("  This may take 2-3 minutes for 500+ chunks...")
 
-    # Create FAISS vector store
     vector_store = FAISS.from_texts(chunks, embeddings)
 
-    # Save to disk
-    save_path = "data/vector_store"
+    # ── Fixed path ──
+    save_path = os.path.join(BASE_DIR, "data/vector_store")
     os.makedirs(save_path, exist_ok=True)
     vector_store.save_local(save_path)
 
@@ -96,7 +98,9 @@ def create_vector_store(chunks):
 # ══════════════════════════════════════════
 def load_vector_store():
     """Load previously saved FAISS index"""
-    save_path = "data/vector_store"
+
+    # ── Fixed path ──
+    save_path = os.path.join(BASE_DIR, "data/vector_store")
 
     if not os.path.exists(save_path):
         print("  ✗ No vector store found! Run vector_store.py first.")
@@ -141,7 +145,6 @@ def query_vector_store(vector_store, question, top_k=3):
 # ══════════════════════════════════════════
 if __name__ == "__main__":
 
-    # Step 1: Load all text
     text = load_all_text()
 
     if not text:
@@ -150,13 +153,9 @@ if __name__ == "__main__":
         print("  python src/ingest.py")
         exit()
 
-    # Step 2: Split into chunks
     chunks = split_text(text)
-
-    # Step 3: Create and save vector store
     vector_store = create_vector_store(chunks)
 
-    # Step 4: Test with ANITS questions
     print("\n" + "=" * 50)
     print("  TESTING WITH SAMPLE QUESTIONS")
     print("=" * 50)
@@ -172,4 +171,3 @@ if __name__ == "__main__":
 
     print("\n✅ vector_store.py working correctly!")
     print("Next step: Run agent.py")
-    
