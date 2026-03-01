@@ -1,6 +1,10 @@
 # 🎓 ANITS Campus Assistant
+
 > An AI-powered chatbot that answers questions about Anil Neerukonda Institute of Technology and Sciences (ANITS), Visakhapatnam.
 
+
+
+---
 
 ## 📌 What is This?
 
@@ -13,11 +17,13 @@ ANITS Campus Assistant is an AI chatbot that helps students, freshers, and visit
 - 📋 Admission procedures
 - 📞 Faculty and department contacts
 
+---
 
 ## 🚀 Live Demo
 
-👉 **[Click here to try the chatbot](https://campusinfo-32psfcsbij6sjagqeatyyn.streamlit.app/)**
+👉 **[Click here to try the chatbot](https://campusinfo-b2brexg6m6qgv6q24wj5bf.streamlit.app/)**
 
+---
 
 ## 🛠️ Tech Stack
 
@@ -32,12 +38,11 @@ ANITS Campus Assistant is an AI chatbot that helps students, freshers, and visit
 | PDF Processing | PyPDF |
 | Deployment | Streamlit Cloud |
 
-For further reference go to requirements.txt file
 ---
 
 ## 📁 Project Structure
 
-
+```
 campus-chatbot/
 ├── data/
 │   ├── handbooks/          # College PDF handbooks
@@ -50,18 +55,19 @@ campus-chatbot/
 │   ├── scraper.py          # Website scraping
 │   ├── vector_store.py     # Embeddings + FAISS
 │   ├── agent.py            # LangChain AI agent
-|
+│   
 ├── app.py                  # Streamlit chat interface
 ├── requirements.txt        # Python dependencies
 ├── .env                    # API keys (never commit!)
 ├── .gitignore              # Git ignore rules
 └── README.md               # This file
+```
 
-
+---
 
 ## ⚙️ How It Works
 
-
+```
 College PDF + ANITS Website
           ↓
    ingest.py + scraper.py     ← collect data
@@ -124,7 +130,7 @@ Run these commands in order:
 ```bash
 python src/ingest.py        # Process PDF
 python src/scraper.py       # Scrape website
-python src/vector_store.py  # Build FAISS index (embeddings+vector store)
+python src/vector_store.py  # Build FAISS index
 ```
 
 ### Step 7 — Run the App
@@ -154,8 +160,8 @@ GROQ_API_KEY = "your_key_here"
 
 | Name | Role | Responsible File |
 |------|------|-----------------|
+| Sampathirao Niranjan Raju | Team Lead  | `src/ingest.py` |
 | Sai Dinesh Alugoji | UI | `app.py` |
-| Sampathirao Niranjan Raju | Team Lead + Data Engineer | `src/ingest.py` |
 | Talasu Chethris | Scraper Dev | `src/scraper.py` |
 | Sai Sandeep Sadhu | AI Engineer | `src/vector_store.py` + `src/agent.py` |
 
@@ -196,12 +202,12 @@ python-docx
 
 ## ⚠️ Common Issues & Fixes
 
-|          Issue           |                     Fix                  |
-|--------------------------|------------------------------------------|                                   
-| `ModuleNotFoundError`    | Run `pip install -r requirements.txt`    |
-| `GROQ_API_KEY not found` | Check your `.env` file exists            |
-| `Vector store not found` | Run `python src/vector_store.py` first   |
-| `Git push rejected`      | Run `git pull origin main` first         |
+| Issue | Fix |
+|-------|-----|
+| `ModuleNotFoundError` | Run `pip install -r requirements.txt` |
+| `GROQ_API_KEY not found` | Check your `.env` file exists |
+| `Vector store not found` | Run `python src/vector_store.py` first |
+| `Git push rejected` | Run `git pull origin main` first |
 | App fails on Streamlit Cloud | Add `GROQ_API_KEY` in Streamlit Secrets |
 
 
@@ -222,4 +228,4 @@ This project is licensed under the MIT License.
 
 ---
 
-*Built with ❤️*
+*Built with ❤️ *
