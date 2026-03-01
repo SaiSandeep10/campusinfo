@@ -32,8 +32,18 @@ st.markdown(
 # ─────────────────────────────────────────────
 # LOAD API KEY (Streamlit Cloud Compatible)
 # ─────────────────────────────────────────────
-if "GROQ_API_KEY" in st.secrets:
-    os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+# ─────────────────────────────────────────────
+# LOAD API KEY (Works both locally and on Streamlit Cloud)
+# ─────────────────────────────────────────────
+from dotenv import load_dotenv
+load_dotenv()  # loads from .env file locally
+
+# If running on Streamlit Cloud, load from st.secrets
+try:
+    if "GROQ_API_KEY" in st.secrets:
+        os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
+except Exception:
+    pass  # running locally, .env file is used instead
 
 # ─────────────────────────────────────────────
 # LOAD AGENT (Only Once)
@@ -45,7 +55,13 @@ def load_chain():
 chain = load_chain()
 
 if not chain:
-    st.error("⚠️ Agent failed to initialize. Check API key or vector store.")
+    st.error("⚠️ Agent failed to initialize.")
+    
+    # Show debug info
+    st.write("**Debug Info:**")
+    st.write(f"GROQ_API_KEY exists: {bool(os.getenv('GROQ_API_KEY'))}")
+    st.write(f"Vector store exists: {os.path.exists('data/vector_store')}")
+    st.write(f"Current directory: {os.getcwd()}")
     st.stop()
 
 # ─────────────────────────────────────────────
