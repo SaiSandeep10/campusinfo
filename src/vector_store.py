@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 # CHANGED: Use Inference API instead of local HuggingFaceEmbeddings
-from langchain_huggingface import HuggingFaceInferenceAPIEmbeddings
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
