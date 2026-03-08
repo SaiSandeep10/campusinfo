@@ -11,23 +11,30 @@ const SUGGESTED_QUESTIONS = [
   "What is the highest placement package?",
 ];
 
-export default function ChatBox() {
+export default function ChatBox({ activeCategory = "general" }) {
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: 'Hi! 👋 I am your ANITS Campus Assistant. Ask me anything about departments, facilities, placements, events, and more!',
+      content:
+        'Hi! 👋 I am your ANITS Campus Assistant. Ask me anything about departments, facilities, placements, events, and more!',
+      media: null,
+      recommendations: [],
       timestamp: new Date().toLocaleTimeString()
     }
   ]);
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef(null);
 
+  // Auto scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const sendMessage = async (question) => {
+
     const userQuestion = question || input.trim();
     if (!userQuestion) return;
 
@@ -36,16 +43,19 @@ export default function ChatBox() {
       content: userQuestion,
       timestamp: new Date().toLocaleTimeString()
     };
+
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/ask', {
+
+      const response = await fetch('http://127.0.0.1:8000/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          question: userQuestion,
+        body: JSON.stringify({
+          query: userQuestion,
+          category: activeCategory === "general" ? null : activeCategory,
           session_id: "default"
         })
       });
@@ -55,20 +65,30 @@ export default function ChatBox() {
       }
 
       const data = await response.json();
+
+      const assistantMsg = {
+        role: 'assistant',
+        content: data.answer || "No response received.",
+        media: data.media || null,
+        recommendations: data.recommendations || [],
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      setMessages(prev => [...prev, assistantMsg]);
+
+    } catch (error) {
+
+      console.error("Error:", error);
+
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: data.answer,
+        content: `❌ Error: ${error.message}. Make sure FastAPI is running.`,
+        media: null,
+        recommendations: [],
         timestamp: new Date().toLocaleTimeString()
       }]);
 
-    } catch (error) {
-      console.error("Error:", error);
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: `❌ Error: ${error.message}. Make sure FastAPI is running on port 8000!`,
-        timestamp: new Date().toLocaleTimeString()
-      }]);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -82,10 +102,17 @@ export default function ChatBox() {
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
+
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-        {messages.length == 1 && (
+
+        {/* Suggested questions */}
+        {messages.length === 1 && (
           <div className="max-w-2xl mx-auto">
-            <p className="text-gray-400 text-sm mb-3 text-center">Try asking:</p>
+            <p className="text-gray-400 text-sm mb-3 text-center">
+              Try asking:
+            </p>
+
             <div className="flex flex-wrap gap-2 justify-center">
               {SUGGESTED_QUESTIONS.map((q, i) => (
                 <button
@@ -99,23 +126,36 @@ export default function ChatBox() {
             </div>
           </div>
         )}
+
+        {/* Chat messages */}
         {messages.map((msg, i) => (
-          <Message key={i} message={msg} />
+          <Message key={i} message={msg} onSuggestionClick={sendMessage}/>
         ))}
+
+        {/* Thinking animation */}
         {isLoading && (
           <div className="flex items-center gap-2 text-gray-400 px-4">
+
             <div className="flex gap-1">
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}}/>
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}/>
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '300ms'}}/>
+              <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
+
             <span className="text-sm">Thinking...</span>
+
           </div>
         )}
+
         <div ref={bottomRef} />
+
       </div>
+
+      {/* Input box */}
       <div className="px-4 py-4 bg-gray-900 border-t border-gray-700">
+
         <div className="max-w-3xl mx-auto flex gap-3 items-end">
+
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -124,6 +164,7 @@ export default function ChatBox() {
             rows={1}
             className="flex-1 bg-gray-800 text-white rounded-xl px-4 py-3 resize-none outline-none border border-gray-600 focus:border-blue-500 transition placeholder-gray-500"
           />
+
           <button
             onClick={() => sendMessage()}
             disabled={isLoading || !input.trim()}
@@ -131,11 +172,15 @@ export default function ChatBox() {
           >
             Send →
           </button>
+
         </div>
+
         <p className="text-center text-xs text-gray-600 mt-2">
           Press Enter to send • Shift+Enter for new line
         </p>
+
       </div>
+
     </div>
   );
 }

@@ -16,6 +16,7 @@ load_dotenv()
 from src.agent import build_agent, get_response
 from backend.routes.chat import router as chat_router
 from backend.routes.history import router as history_router
+from backend.routes.search import router as search_router
 
 # ══════════════════════════════════════════
 # CREATE FASTAPI APP
@@ -80,6 +81,7 @@ async def startup_event():
 # ══════════════════════════════════════════
 app.include_router(chat_router, prefix="/api", tags=["Chat"])
 app.include_router(history_router, prefix="/api", tags=["History"])
+app.include_router(search_router, prefix="/api", tags=["Search"])
 
 # ══════════════════════════════════════════
 # ROOT ENDPOINT

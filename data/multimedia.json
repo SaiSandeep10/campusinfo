@@ -1,0 +1,28 @@
+{
+  "anits": {
+    "images": [
+      "https://www.anits.org/media/jrcollege/slides/slide2_2_YZSPSoq_DrN5pxS.png"
+    ],
+    "video": "https://www.youtube.com/watch?v=ZbZSe6N_BXs"
+  },
+
+  "library": {
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/3/3a/Library.jpg"
+    ],
+    "video": "https://www.youtube.com/watch?v=ZbZSe6N_BXs"
+  },
+
+  "canteen": {
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/a/a5/Food_court.jpg"
+    ],
+    "video": "https://www.youtube.com/watch?v=1APwq1df6Mw"
+  },
+  "placements": {
+    "images": [
+      "https://www.anits.org/media/jrcollege/slides/Website_Posters_ANITS.png"
+    ],
+    "video": "https://www.youtube.com/watch?v=ZbZSe6N_BXs"
+  }
+}

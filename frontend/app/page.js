@@ -1,45 +1,54 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import ChatBox from './components/ChatBox';
-import Sidebar from './components/Sidebar';
+import { useState } from "react"
+import ChatBox from "./components/ChatBox"
+import Sidebar from "./components/Sidebar"
 
 export default function Home() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const [activeCategory, setActiveCategory] = useState("general")
+  const [sidebarOpen, setSidebarOpen] = useState(true)
 
   return (
-    <main className="flex h-screen bg-gray-950 text-white">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-      />
-      <div className="flex flex-col flex-1 h-screen overflow-hidden">
-        <header className="flex items-center justify-between px-6 py-4 bg-gray-900 border-b border-gray-700">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="text-gray-400 hover:text-white transition"
-            >
-              ☰
-            </button>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🎓</span>
-              <div>
-                <h1 className="text-lg font-bold text-white">
-                  ANITS Campus Assistant
-                </h1>
-                <p className="text-xs text-green-400">
-                  ● Online — Powered by Llama 3
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="text-sm text-gray-400 hidden md:block">
-            Anil Neerukonda Institute of Technology & Sciences
-          </div>
-        </header>
-        <ChatBox />
+    <div className="flex flex-col h-screen bg-gray-950">
+
+      {/* HEADER */}
+      <header className="bg-gray-900 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
+
+        <div className="flex items-center gap-3">
+
+          {/* Toggle Button */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-gray-300 hover:text-white text-xl"
+          >
+            ☰
+          </button>
+
+          <h1 className="text-white font-bold text-lg">
+            🎓 ANITS Campus Assistant
+          </h1>
+
+        </div>
+
+      </header>
+
+      {/* MAIN AREA */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* Sidebar */}
+        {sidebarOpen && (
+          <Sidebar
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+          />
+        )}
+
+        {/* Chat */}
+        <ChatBox activeCategory={activeCategory} />
+
       </div>
-    </main>
-  );
+
+    </div>
+  )
 }
