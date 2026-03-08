@@ -46,7 +46,30 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     print("\n🚀 Starting ANITS Campus Assistant API...")
+
+    # Test MongoDB connection
+    try:
+        from backend.models.database import db
+        if db is not None:
+            db.command("ping")
+            print("  ✓ MongoDB connected!")
+        else:
+            print("  ✗ MongoDB connection failed!")
+    except Exception as e:
+        print(f"  ✗ MongoDB error: {e}")
+
+    # Check content freshness
+    try:
+        from src.freshness import auto_refresh_if_stale, save_freshness_timestamp
+        save_freshness_timestamp()
+        auto_refresh_if_stale()
+        print("  ✓ Content freshness checked!")
+    except Exception as e:
+        print(f"  ⚠️ Freshness check skipped: {e}")
+
+    # Load AI agent
     app.state.chain = build_agent()
+    
     if app.state.chain:
         print("  ✅ AI Agent loaded successfully!")
     else:

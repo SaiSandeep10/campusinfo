@@ -1,5 +1,5 @@
 # backend/routes/history.py
-# Chat history endpoint
+# Chat history endpoint with MongoDB
 
 from fastapi import APIRouter
 
@@ -10,17 +10,21 @@ router = APIRouter()
 # ══════════════════════════════════════════
 @router.get("/history")
 async def get_history(session_id: str = "default"):
-    """
-    Returns chat history for a session.
-    Will be connected to MongoDB later!
-    """
-    # Placeholder for now
-    # Will be replaced with MongoDB query
-    return {
-        "session_id": session_id,
-        "messages": [],
-        "message": "History feature coming soon with MongoDB!"
-    }
+    """Returns chat history from MongoDB"""
+    try:
+        from backend.models.chat import get_chat_history
+        messages = get_chat_history(session_id)
+        return {
+            "session_id": session_id,
+            "messages": messages,
+            "count": len(messages)
+        }
+    except Exception as e:
+        return {
+            "session_id": session_id,
+            "messages": [],
+            "error": str(e)
+        }
 
 # ══════════════════════════════════════════
 # GET /api/categories
@@ -38,4 +42,16 @@ async def get_categories():
             {"id": "locations", "label": "Campus Map", "icon": "🗺️"},
         ]
     }
+
+# ══════════════════════════════════════════
+# GET /api/freshness
+# ══════════════════════════════════════════
+@router.get("/freshness")
+async def get_freshness():
+    """Returns content freshness status"""
+    try:
+        from src.freshness import get_freshness_status
+        return get_freshness_status()
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 

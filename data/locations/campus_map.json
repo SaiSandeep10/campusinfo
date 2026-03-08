@@ -1,0 +1,76 @@
+{
+  "campus_locations": [
+    {
+      "name": "Main Gate",
+      "description": "Main entrance of ANITS campus",
+      "block": "Entrance",
+      "directions": "Located on the main road from Bheemunipatnam"
+    },
+    {
+      "name": "Administrative Block",
+      "description": "Principal office, exam cell, admission office",
+      "block": "Admin Block",
+      "directions": "Straight from main gate, first building on right"
+    },
+    {
+      "name": "CSE Block",
+      "description": "Computer Science department, labs, HOD office",
+      "block": "Block A",
+      "directions": "Left from main gate, second building"
+    },
+    {
+      "name": "ECE Block",
+      "description": "Electronics department, communication labs",
+      "block": "Block B",
+      "directions": "Left from main gate, third building"
+    },
+    {
+      "name": "Library",
+      "description": "Central library with 50000+ books and digital resources. Open 8AM to 8PM",
+      "block": "Library Block",
+      "directions": "Center of campus, opposite to canteen"
+    },
+    {
+      "name": "Placement Cell",
+      "description": "Training and Placement Office, interview rooms",
+      "block": "Admin Block Ground Floor",
+      "directions": "Ground floor of Admin Block, near main gate"
+    },
+    {
+      "name": "Canteen",
+      "description": "College canteen serving breakfast lunch and snacks. Open 7AM to 8PM",
+      "block": "Canteen Block",
+      "directions": "Center of campus, opposite to library"
+    },
+    {
+      "name": "Boys Hostel",
+      "description": "Boys hostel with capacity of 500 inmates",
+      "block": "North Campus",
+      "directions": "North side of campus, 5 minute walk from main gate"
+    },
+    {
+      "name": "Girls Hostel",
+      "description": "Girls hostel with separate security",
+      "block": "South Campus",
+      "directions": "South side of campus, separate entrance"
+    },
+    {
+      "name": "Sports Ground",
+      "description": "Cricket ground, football field, basketball court",
+      "block": "East Campus",
+      "directions": "East side of campus, behind ECE block"
+    },
+    {
+      "name": "Medical Centre",
+      "description": "Campus health centre with doctor and nurse",
+      "block": "Admin Block",
+      "directions": "Near Admin Block, next to ATM"
+    },
+    {
+      "name": "ATM",
+      "description": "ATM available on campus",
+      "block": "Near Admin Block",
+      "directions": "Near main gate, next to medical centre"
+    }
+  ]
+}

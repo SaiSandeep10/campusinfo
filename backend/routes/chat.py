@@ -1,9 +1,10 @@
 # backend/routes/chat.py
-# Chat endpoint - handles questions from React frontend
+# Chat endpoint with MongoDB integration
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
 from datetime import datetime
+import uuid
 
 router = APIRouter()
 
@@ -19,6 +20,7 @@ class AnswerResponse(BaseModel):
     timestamp: str
     session_id: str
 
+
 # ══════════════════════════════════════════
 # POST /api/ask
 # ══════════════════════════════════════════
@@ -26,7 +28,7 @@ class AnswerResponse(BaseModel):
 async def ask_question(request: Request, body: QuestionRequest):
     """
     Main endpoint - receives question from React,
-    sends to AI agent, returns answer
+    sends to AI agent, saves to MongoDB, returns answer
     """
     print(f"\n[API] Question: {body.question}")
 
@@ -35,22 +37,27 @@ async def ask_question(request: Request, body: QuestionRequest):
 
     if not chain:
         return AnswerResponse(
-            answer="Sorry, AI agent is not available. Please try again later.",
+            answer="Sorry AI agent is not available. Please try again later.",
             question=body.question,
             timestamp=datetime.now().isoformat(),
             session_id=body.session_id
         )
 
-    # Import get_response from agent
-    from src.agent import get_response
-
     # Get answer from AI
+    from src.agent import get_response
     answer = get_response(chain, body.question)
 
-    print(f"[API] Answer: {answer[:100]}...")
+    # Save to MongoDB
+    try:
+        from backend.models.chat import save_message, create_session, update_session
+        create_session(body.session_id)
+        save_message(body.session_id, body.question, answer)
+        update_session(body.session_id)
+        print(f"  ✓ Saved to MongoDB")
+    except Exception as e:
+        print(f"  ⚠️ MongoDB save failed: {e}")
 
-    # Save to MongoDB (we'll add this later)
-    # await save_to_db(body.question, answer, body.session_id)
+    print(f"[API] Answer: {answer[:100]}...")
 
     return AnswerResponse(
         answer=answer,

@@ -18,10 +18,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ══════════════════════════════════════════
 def load_all_text():
     """Load text from all saved sources"""
+    import pandas as pd
+    import json
+
     print("\nLoading text from all sources...")
     all_text = ""
 
-    # Load scraped website content
+    # ── 1. Website content ──
     website_file = os.path.join(BASE_DIR, "data/scraped/website.txt")
     if os.path.exists(website_file):
         with open(website_file, "r", encoding="utf-8") as f:
@@ -31,7 +34,7 @@ def load_all_text():
     else:
         print("  ✗ No website.txt found. Run scraper.py first!")
 
-    # Load PDF chunks
+    # ── 2. PDF chunks ──
     pdf_chunks_file = os.path.join(BASE_DIR, "data/scraped/chunks.txt")
     if os.path.exists(pdf_chunks_file):
         with open(pdf_chunks_file, "r", encoding="utf-8") as f:
@@ -39,9 +42,63 @@ def load_all_text():
             all_text += content
             print(f"  ✓ Loaded PDF chunks: {len(content)} characters")
 
+    # ── 3. Faculty Contacts CSV ──
+    contacts_file = os.path.join(BASE_DIR, "data/contacts/faculty_contacts.csv")
+    if os.path.exists(contacts_file):
+        df = pd.read_csv(contacts_file)
+        contact_text = "\n\nFACULTY CONTACTS:\n"
+        for _, row in df.iterrows():
+            contact_text += (
+                f"Name: {row['Name']} | "
+                f"Department: {row['Department']} | "
+                f"Designation: {row['Designation']} | "
+                f"Email: {row['Email']} | "
+                f"Phone: {row['Phone']} | "
+                f"Cabin: {row['Cabin']}\n"
+            )
+        all_text += contact_text
+        print(f"  ✓ Loaded {len(df)} faculty contacts")
+    else:
+        print("  ✗ No faculty_contacts.csv found!")
+
+    # ── 4. Events CSV ──
+    events_file = os.path.join(BASE_DIR, "data/events/events.csv")
+    if os.path.exists(events_file):
+        df = pd.read_csv(events_file)
+        events_text = "\n\nCAMPUS EVENTS:\n"
+        for _, row in df.iterrows():
+            events_text += (
+                f"Event: {row['Event']} | "
+                f"Date: {row['Date']} | "
+                f"Venue: {row['Venue']} | "
+                f"Description: {row['Description']} | "
+                f"Registration: {row['Registration']}\n"
+            )
+        all_text += events_text
+        print(f"  ✓ Loaded {len(df)} campus events")
+    else:
+        print("  ✗ No events.csv found!")
+
+    # ── 5. Campus Locations JSON ──
+    locations_file = os.path.join(BASE_DIR, "data/locations/campus_map.json")
+    if os.path.exists(locations_file):
+        with open(locations_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        locations_text = "\n\nCAMPUS LOCATIONS:\n"
+        for loc in data["campus_locations"]:
+            locations_text += (
+                f"Campus Location: {loc['name']}. "
+                f"Description: {loc['description']}. "
+                f"Block: {loc['block']}. "
+                f"How to reach: {loc['directions']}\n"
+            )
+        all_text += locations_text
+        print(f"  ✓ Loaded {len(data['campus_locations'])} campus locations")
+    else:
+        print("  ✗ No campus_map.json found!")
+
     print(f"  Total text loaded: {len(all_text)} characters")
     return all_text
-
 
 # ══════════════════════════════════════════
 # FUNCTION 2 — Split Text into Chunks
