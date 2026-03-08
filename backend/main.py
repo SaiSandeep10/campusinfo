@@ -84,11 +84,10 @@ async def root():
 
 @app.get("/health")
 async def health():
-    # Basic check to see if dependencies are loaded
-    return {
-        "status": "healthy",
-        "numpy_version": "fixed" if os.path.exists(PROJECT_ROOT) else "error"
-    }
+    # 'agent_chain' isn't defined in the scope of this function 
+    # unless it's imported or declared global.
+    agent_status = "loaded" if 'agent_chain' in globals() else "not_loaded"
+    return {"status": "healthy", "agent": agent_status}
 
 if __name__ == "__main__":
     import uvicorn
