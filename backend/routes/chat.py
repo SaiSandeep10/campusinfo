@@ -1,65 +1,59 @@
 # backend/routes/chat.py
-# Chat endpoint with MongoDB integration
+# Main chat endpoint
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
 from datetime import datetime
-import uuid
+
+from backend.main import get_agent
+from src.agent import get_response
 
 router = APIRouter()
 
-# ── Request model ──
-class QuestionRequest(BaseModel):
+
+# --------------------------------------------------
+# Request Model
+# --------------------------------------------------
+class ChatRequest(BaseModel):
     question: str
     session_id: str = "default"
 
-# ── Response model ──
-class AnswerResponse(BaseModel):
+
+# --------------------------------------------------
+# Response Model
+# --------------------------------------------------
+class ChatResponse(BaseModel):
     answer: str
     question: str
     timestamp: str
     session_id: str
 
 
-# ══════════════════════════════════════════
+# --------------------------------------------------
 # POST /api/ask
-# ══════════════════════════════════════════
-@router.post("/ask", response_model=AnswerResponse)
-async def ask_question(request: Request, body: QuestionRequest):
-    """
-    Main endpoint - receives question from React,
-    sends to AI agent, saves to MongoDB, returns answer
-    """
-    print(f"\n[API] Question: {body.question}")
+# --------------------------------------------------
+@router.post("/ask", response_model=ChatResponse)
+async def ask_question(request: Request, body: ChatRequest):
 
-    # Get AI chain from app state
-    chain = request.app.state.chain
+    print("\n[API] Question:", body.question)
 
-    if not chain:
-        return AnswerResponse(
-            answer="Sorry AI agent is not available. Please try again later.",
-            question=body.question,
-            timestamp=datetime.now().isoformat(),
-            session_id=body.session_id
-        )
+    # Load AI agent (lazy loading)
+    chain = get_agent()
 
-    # Get answer from AI
-    from src.agent import get_response
+    # Generate response from AI
     answer = get_response(chain, body.question)
 
-    # Save to MongoDB
+    # Save chat history to MongoDB
     try:
-        from backend.models.chat import save_message, create_session, update_session
-        create_session(body.session_id)
+        from backend.models.chat import save_message, update_session
+
         save_message(body.session_id, body.question, answer)
         update_session(body.session_id)
-        print(f"  ✓ Saved to MongoDB")
+
     except Exception as e:
-        print(f"  ⚠️ MongoDB save failed: {e}")
+        print("⚠ MongoDB save failed:", e)
 
-    print(f"[API] Answer: {answer[:100]}...")
-
-    return AnswerResponse(
+    return ChatResponse(
         answer=answer,
         question=body.question,
         timestamp=datetime.now().isoformat(),
