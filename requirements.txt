@@ -8,13 +8,14 @@ langchain-groq
 langchain-huggingface
 langchain-text-splitters
 
+torch==2.2.2+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
 sentence-transformers
-faiss-cpu
 
+faiss-cpu
 pandas
 beautifulsoup4
 pypdf
 python-docx
 requests
-
 pymongo

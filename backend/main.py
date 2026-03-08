@@ -41,27 +41,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ----------------------------------------------------
-# GLOBAL AGENT (Lazy Load)
-# ----------------------------------------------------
-agent_chain = None
-
-
-def get_agent():
-    """
-    Loads AI agent only when first needed.
-    Prevents slow startup on cloud platforms.
-    """
-    global agent_chain
-
-    if agent_chain is None:
-        print("⚡ Loading AI Agent...")
-        from src.agent import build_agent
-        agent_chain = build_agent()
-        print("✅ AI Agent Loaded")
-
-    return agent_chain
-
 
 # ----------------------------------------------------
 # STARTUP EVENT

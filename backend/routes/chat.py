@@ -5,7 +5,7 @@ from fastapi import APIRouter, Request
 from pydantic import BaseModel
 from datetime import datetime
 
-from backend.main import get_agent
+from src.agent_manager import get_agent
 from src.agent import get_response
 
 router = APIRouter()

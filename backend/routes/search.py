@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
-from backend.main import get_agent
+from src.agent_manager import get_agent
 from src.agent import get_response
 from src.multimedia import search_multimedia
 from src.recommendations import get_recommendations
