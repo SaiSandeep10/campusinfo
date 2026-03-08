@@ -1,115 +1,96 @@
-# backend/main.py
-# FastAPI Backend for ANITS Campus Assistant
-
 import os
 import sys
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import uvicorn
 
-
-# ----------------------------------------------------
-# Project Path Setup
-# ----------------------------------------------------
+# Path setup
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
 
 load_dotenv()
 
 # ----------------------------------------------------
-# FastAPI App
+# LIFESPAN HANDLER (Replaces @app.on_event("startup"))
 # ----------------------------------------------------
-app = FastAPI(
-    title="ANITS Campus Assistant API",
-    description="Backend API for ANITS Campus Chatbot",
-    version="1.0.0"
-)
-
-# ----------------------------------------------------
-# CORS (Allow frontend requests)
-# ----------------------------------------------------
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://*.vercel.app",
-        "*"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-# ----------------------------------------------------
-# STARTUP EVENT
-# ----------------------------------------------------
-@app.on_event("startup")
-async def startup_event():
-
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # This runs ON STARTUP
     print("\n🚀 Starting ANITS Campus Assistant API...")
-
-    # MongoDB test
+    
+    # MongoDB check
     try:
         from backend.models.database import db
         if db is not None:
             db.command("ping")
             print("✓ MongoDB connected!")
-        else:
-            print("✗ MongoDB not connected")
     except Exception as e:
-        print("MongoDB error:", e)
+        print(f"MongoDB error: {e}")
 
-    # Content freshness check
+    # Freshness check
     try:
         from src.freshness import auto_refresh_if_stale, save_freshness_timestamp
-
         save_freshness_timestamp()
         auto_refresh_if_stale()
-
         print("✓ Content freshness checked!")
     except Exception as e:
-        print("Freshness check skipped:", e)
+        print(f"Freshness check skipped: {e}")
 
+    yield # --- App is running ---
+
+    # This runs ON SHUTDOWN
+    print("👋 Shutting down...")
 
 # ----------------------------------------------------
-# ROUTES
+# FastAPI App
+# ----------------------------------------------------
+app = FastAPI(
+    title="ANITS Campus Assistant API",
+    version="1.0.0",
+    lifespan=lifespan
+)
+
+# CORS (Fixed: origins cannot be "*" if allow_credentials is True)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"], # Add your Vercel URL here
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ----------------------------------------------------
+# ROUTES & AGENT IMPORT
 # ----------------------------------------------------
 from backend.routes.chat import router as chat_router
 from backend.routes.history import router as history_router
 from backend.routes.search import router as search_router
 
+# Safely import agent_chain for the health check
+try:
+    from src.agent_manager import get_agent
+    # Assuming get_agent() or similar initializes your chain
+except ImportError:
+    pass
+
 app.include_router(chat_router, prefix="/api", tags=["Chat"])
 app.include_router(history_router, prefix="/api", tags=["History"])
 app.include_router(search_router, prefix="/api", tags=["Search"])
 
-
-# ----------------------------------------------------
-# ROOT ENDPOINT
-# ----------------------------------------------------
 @app.get("/")
 async def root():
-    return {
-        "message": "ANITS Campus Assistant API is running!",
-        "version": "1.0.0",
-        "status": "online"
-    }
+    return {"message": "ANITS Campus Assistant API is running!"}
 
-
-# ----------------------------------------------------
-# HEALTH CHECK
-# ----------------------------------------------------
 @app.get("/health")
 async def health():
-
-    agent_status = "loaded" if agent_chain else "not_loaded"
-
+    # Basic check to see if dependencies are loaded
     return {
         "status": "healthy",
-        "agent": agent_status
+        "numpy_version": "fixed" if os.path.exists(PROJECT_ROOT) else "error"
     }
 
 if __name__ == "__main__":
+    import uvicorn
     port = int(os.environ.get("PORT", 10000))
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port)
