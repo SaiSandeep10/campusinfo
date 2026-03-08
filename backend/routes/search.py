@@ -10,8 +10,7 @@ from src.multimedia import search_multimedia
 from src.recommendations import get_recommendations
 
 # import lazy loader
-from backend.main import get_agent
-
+from src.agent_loader import get_agent
 router = APIRouter()
 
 
