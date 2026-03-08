@@ -6,6 +6,8 @@ import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+import uvicorn
+
 
 # ----------------------------------------------------
 # Project Path Setup
@@ -128,3 +130,7 @@ async def health():
         "status": "healthy",
         "agent": agent_status
     }
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=port)
