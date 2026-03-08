@@ -10,7 +10,7 @@ from src.agent_manager import get_agent
 from src.agent import get_response
 from src.multimedia import search_multimedia
 from src.recommendations import get_recommendations
-
+from src.agent import build_agent, get_response
 router = APIRouter()
 
 

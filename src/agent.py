@@ -3,6 +3,7 @@
 
 import os
 import sys
+import traceback
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
@@ -57,14 +58,12 @@ def build_agent():
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         print("  ✗ GROQ_API_KEY not found!")
-        print("    Add GROQ_API_KEY=your_key to .env file")
         return None
 
     # Step 1: Load vector store
     vector_store = load_vector_store()
     if not vector_store:
         print("  ✗ Vector store not found!")
-        print("    Run: python src/vector_store.py first")
         return None
     print("  ✓ Vector store loaded")
 
@@ -93,13 +92,11 @@ def build_agent():
         ("human", "{input}"),
     ])
 
-    # Step 5: Helper to format retrieved docs into one string
+    # Step 5: Helper to format retrieved docs
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
 
-    # Step 6: Build LCEL chain using pipe operator
-    # This works in ALL LangChain versions including v1.2!
-    # Flow: question → retrieve docs → format → prompt → llm → parse
+    # Step 6: Build LCEL chain
     chain = (
         {
             "context": retriever | format_docs,
@@ -121,14 +118,16 @@ def build_agent():
 def get_response(chain, question):
     """
     Takes a question and returns answer.
-    Called by app.py for every user message.
+    Called by routes for every user message.
     """
-    if not question.strip():
+    if not question or not question.strip():
         return "Please ask a question!"
 
     try:
-        # Invoke chain with question directly
         answer = chain.invoke(question)
+
+        if not answer or len(answer.strip()) == 0:
+            return "I don't have specific information about that. Please visit anits.org or contact the college office."
 
         print(f"\n[Agent] Q: {question}")
         print(f"[Agent] A: {answer[:100]}...")
@@ -136,7 +135,9 @@ def get_response(chain, question):
         return answer
 
     except Exception as e:
-        print(f"[Agent] Error: {e}")
+        print(f"[Agent] Error type: {type(e).__name__}")
+        print(f"[Agent] Error message: {str(e)}")
+        traceback.print_exc()
         return (
             "Sorry, I encountered an error. "
             "Please try again or contact the college office."
@@ -147,7 +148,7 @@ def get_response(chain, question):
 # FUNCTION 3 — Terminal Chat for Testing
 # ══════════════════════════════════════════
 def chat_loop(chain):
-    """Simple terminal chat for testing before app.py"""
+    """Simple terminal chat for testing"""
     print("\n" + "=" * 55)
     print("   ANITS Campus Assistant — Test Mode")
     print("   Type 'exit' to quit")
@@ -178,15 +179,12 @@ def chat_loop(chain):
 # TEST
 # ══════════════════════════════════════════
 if __name__ == "__main__":
-
-    # Build agent
     chain = build_agent()
 
     if not chain:
         print("\n✗ Agent failed. Fix errors above first.")
         exit()
 
-    # Auto test questions
     print("\n" + "=" * 55)
     print("   AUTOMATIC TEST QUESTIONS")
     print("=" * 55)
@@ -203,6 +201,4 @@ if __name__ == "__main__":
         print(f"Answer: {answer}")
         print("-" * 55)
 
-    # Start interactive chat
-    print("\n✅ Tests done! Starting chat mode...")
     chat_loop(chain)
