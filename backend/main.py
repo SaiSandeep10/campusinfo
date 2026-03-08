@@ -13,7 +13,6 @@ sys.path.append(PROJECT_ROOT)
 
 load_dotenv()
 
-from src.agent import build_agent, get_response
 from backend.routes.chat import router as chat_router
 from backend.routes.history import router as history_router
 from backend.routes.search import router as search_router
@@ -42,7 +41,21 @@ app.add_middleware(
 )
 
 # ══════════════════════════════════════════
-# LOAD AI AGENT ON STARTUP
+# LAZY LOAD AI AGENT
+# ══════════════════════════════════════════
+agent_chain = None
+
+def get_agent():
+    global agent_chain
+    if agent_chain is None:
+        print("⚡ Loading AI Agent...")
+        from src.agent import build_agent
+        agent_chain = build_agent()
+        print("✅ AI Agent loaded!")
+    return agent_chain
+
+# ══════════════════════════════════════════
+# STARTUP EVENT
 # ══════════════════════════════════════════
 @app.on_event("startup")
 async def startup_event():
@@ -67,14 +80,6 @@ async def startup_event():
         print("  ✓ Content freshness checked!")
     except Exception as e:
         print(f"  ⚠️ Freshness check skipped: {e}")
-
-    # Load AI agent
-    app.state.chain = build_agent()
-    
-    if app.state.chain:
-        print("  ✅ AI Agent loaded successfully!")
-    else:
-        print("  ✗ AI Agent failed to load!")
 
 # ══════════════════════════════════════════
 # INCLUDE ROUTES
@@ -101,5 +106,5 @@ async def root():
 async def health():
     return {
         "status": "healthy",
-        "agent": "loaded" if app.state.chain else "failed"
+        "agent": "loaded" if agent_chain else "not loaded"
     }
