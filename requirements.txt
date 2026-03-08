@@ -1,16 +1,20 @@
-# Core Backend
+# Web Server
 fastapi
 uvicorn
 python-dotenv
-pymongo
 
-# AI/ML Stack - PINNED VERSIONS
-numpy<2.0.0
-torch>=2.2.2 --index-url https://download.pytorch.org/whl/cpu
-sentence-transformers
-transformers
+# AI & LLM (Lightweight API versions)
 langchain
 langchain-community
 langchain-groq
 langchain-huggingface
-langchain-text-splitters
+faiss-cpu
+
+# Data Handling
+pandas
+pymongo
+pydantic
+python-multipart
+
+# Utilities
+requests

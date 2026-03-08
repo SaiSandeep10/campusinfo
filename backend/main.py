@@ -12,14 +12,13 @@ sys.path.append(PROJECT_ROOT)
 load_dotenv()
 
 # ----------------------------------------------------
-# LIFESPAN HANDLER (Replaces @app.on_event("startup"))
+# LIFESPAN HANDLER
 # ----------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # This runs ON STARTUP
     print("\n🚀 Starting ANITS Campus Assistant API...")
     
-    # MongoDB check
+    # 1. MongoDB check (Low RAM usage)
     try:
         from backend.models.database import db
         if db is not None:
@@ -28,33 +27,41 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"MongoDB error: {e}")
 
-    # Freshness check
-    try:
-        from src.freshness import auto_refresh_if_stale, save_freshness_timestamp
-        save_freshness_timestamp()
-        auto_refresh_if_stale()
-        print("✓ Content freshness checked!")
-    except Exception as e:
-        print(f"Freshness check skipped: {e}")
+    # 2. IMPORTANT: Skip heavy local processing on Render
+    # auto_refresh_if_stale() often triggers a full re-embedding
+    # which will CRASH a 512MB server. 
+    # Only run this if we aren't in production or if memory allows.
+    if os.getenv("RENDER"):
+        print("⚠️ Running on Render: Skipping auto_refresh to save RAM.")
+    else:
+        try:
+            from src.freshness import auto_refresh_if_stale
+            auto_refresh_if_stale()
+            print("✓ Content freshness checked!")
+        except Exception as e:
+            print(f"Freshness check skipped: {e}")
 
-    yield # --- App is running ---
-
-    # This runs ON SHUTDOWN
+    yield 
     print("👋 Shutting down...")
 
-# ----------------------------------------------------
-# FastAPI App
-# ----------------------------------------------------
 app = FastAPI(
     title="ANITS Campus Assistant API",
     version="1.0.0",
     lifespan=lifespan
 )
 
-# CORS (Fixed: origins cannot be "*" if allow_credentials is True)
+# ----------------------------------------------------
+# CORS - Prepare for Production
+# ----------------------------------------------------
+# Pro-tip: Use an env var for your Vercel URL
+allowed_origins = [
+    "http://localhost:3000",
+    os.getenv("FRONTEND_URL", "*") # Add your Vercel URL to Render Env Vars
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"], # Add your Vercel URL here
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -67,13 +74,6 @@ from backend.routes.chat import router as chat_router
 from backend.routes.history import router as history_router
 from backend.routes.search import router as search_router
 
-# Safely import agent_chain for the health check
-try:
-    from src.agent_manager import get_agent
-    # Assuming get_agent() or similar initializes your chain
-except ImportError:
-    pass
-
 app.include_router(chat_router, prefix="/api", tags=["Chat"])
 app.include_router(history_router, prefix="/api", tags=["History"])
 app.include_router(search_router, prefix="/api", tags=["Search"])
@@ -84,10 +84,13 @@ async def root():
 
 @app.get("/health")
 async def health():
-    # 'agent_chain' isn't defined in the scope of this function 
-    # unless it's imported or declared global.
-    agent_status = "loaded" if 'agent_chain' in globals() else "not_loaded"
-    return {"status": "healthy", "agent": agent_status}
+    # We check if the HF_TOKEN is present as a proxy for 'ready'
+    hf_ready = "configured" if os.getenv("HF_TOKEN") else "missing"
+    return {
+        "status": "healthy", 
+        "embeddings": "HuggingFace-Inference-API",
+        "token_status": hf_ready
+    }
 
 if __name__ == "__main__":
     import uvicorn
