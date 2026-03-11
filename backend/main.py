@@ -17,8 +17,8 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("\n🚀 Starting ANITS Campus Assistant API...")
-    
-    # 1. MongoDB check (Low RAM usage)
+
+    # MongoDB check
     try:
         from backend.models.database import db
         if db is not None:
@@ -27,10 +27,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"MongoDB error: {e}")
 
-    # 2. IMPORTANT: Skip heavy local processing on Render
-    # auto_refresh_if_stale() often triggers a full re-embedding
-    # which will CRASH a 512MB server. 
-    # Only run this if we aren't in production or if memory allows.
+    # Freshness check
     if os.getenv("RENDER"):
         print("⚠️ Running on Render: Skipping auto_refresh to save RAM.")
     else:
@@ -41,9 +38,22 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             print(f"Freshness check skipped: {e}")
 
-    yield 
-    print("👋 Shutting down...")
+    # ── ADD THIS ── Load AI agent ONCE on startup
+    try:
+        from src.agent import build_agent
+        app.state.chain = build_agent()
+        if app.state.chain:
+            print("✅ AI Agent loaded successfully!")
+        else:
+            print("✗ AI Agent failed to load!")
+            app.state.chain = None
+    except Exception as e:
+        print(f"✗ Agent error: {e}")
+        app.state.chain = None
 
+    yield
+    print("👋 Shutting down...")
+   
 app = FastAPI(
     title="ANITS Campus Assistant API",
     version="1.0.0",
