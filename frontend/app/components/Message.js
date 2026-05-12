@@ -66,7 +66,7 @@ export default function Message({ message, onSuggestionClick }) {
         )}
 
         {/* Timestamp */}
-        <div className="text-xs text-gray-500 mt-2">
+        <div className="text-xs text-gray-500 mt-2" suppressHydrationWarning>
           {message.timestamp}
         </div>
 

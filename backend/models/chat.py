@@ -1,14 +1,14 @@
 # backend/models/chat.py
-# Chat history model for MongoDB
+# Chat history functions for MongoDB
 
 from datetime import datetime
 from backend.models.database import chat_collection, session_collection
 
+
 # ══════════════════════════════════════════
-# SAVE CHAT MESSAGE
+# SAVE MESSAGE
 # ══════════════════════════════════════════
 def save_message(session_id, question, answer):
-    """Save a chat message to MongoDB"""
     if chat_collection is None:
         return None
 
@@ -29,7 +29,6 @@ def save_message(session_id, question, answer):
 # GET CHAT HISTORY
 # ══════════════════════════════════════════
 def get_chat_history(session_id, limit=20):
-    """Get chat history for a session"""
     if chat_collection is None:
         return []
 
@@ -45,21 +44,17 @@ def get_chat_history(session_id, limit=20):
 # CREATE SESSION
 # ══════════════════════════════════════════
 def create_session(session_id):
-    """Create a new user session"""
     if session_collection is None:
         return None
 
-    session = {
-        "session_id": session_id,
-        "created_at": datetime.now(),
-        "last_active": datetime.now(),
-        "message_count": 0
-    }
-
-    # Only create if doesn't exist
     existing = session_collection.find_one({"session_id": session_id})
     if not existing:
-        session_collection.insert_one(session)
+        session_collection.insert_one({
+            "session_id": session_id,
+            "created_at": datetime.now(),
+            "last_active": datetime.now(),
+            "message_count": 0
+        })
         print(f"  ✓ New session created: {session_id}")
 
     return session_id
@@ -69,7 +64,6 @@ def create_session(session_id):
 # UPDATE SESSION
 # ══════════════════════════════════════════
 def update_session(session_id):
-    """Update session last active time"""
     if session_collection is None:
         return None
 

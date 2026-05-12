@@ -1,110 +1,102 @@
+# backend/main.py
+# FastAPI Backend for ANITS Campus Assistant
+
 import os
 import sys
-from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-# Path setup
+# Add project root to path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
 
 load_dotenv()
 
-# ----------------------------------------------------
-# LIFESPAN HANDLER
-# ----------------------------------------------------
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("\n🚀 Starting ANITS Campus Assistant API...")
+from src.agent import build_agent
+from backend.routes.chat import router as chat_router
+from backend.routes.search import router as search_router
+from backend.routes.history import router as history_router
 
-    # MongoDB check
-    try:
-        from backend.models.database import db
-        if db is not None:
-            db.command("ping")
-            print("✓ MongoDB connected!")
-    except Exception as e:
-        print(f"MongoDB error: {e}")
-
-    # Freshness check
-    if os.getenv("RENDER"):
-        print("⚠️ Running on Render: Skipping auto_refresh to save RAM.")
-    else:
-        try:
-            from src.freshness import auto_refresh_if_stale
-            auto_refresh_if_stale()
-            print("✓ Content freshness checked!")
-        except Exception as e:
-            print(f"Freshness check skipped: {e}")
-
-    # ── ADD THIS ── Load AI agent ONCE on startup
-    try:
-        from src.agent import build_agent
-        app.state.chain = build_agent()
-        if app.state.chain:
-            print("✅ AI Agent loaded successfully!")
-        else:
-            print("✗ AI Agent failed to load!")
-            app.state.chain = None
-    except Exception as e:
-        print(f"✗ Agent error: {e}")
-        app.state.chain = None
-
-    yield
-    print("👋 Shutting down...")
-   
+# ══════════════════════════════════════════
+# CREATE FASTAPI APP
+# ══════════════════════════════════════════
 app = FastAPI(
     title="ANITS Campus Assistant API",
-    version="1.0.0",
-    lifespan=lifespan
+    description="Backend API for ANITS Campus Chatbot",
+    version="1.0.0"
 )
 
-# ----------------------------------------------------
-# CORS - Prepare for Production
-# ----------------------------------------------------
-# Pro-tip: Use an env var for your Vercel URL
-allowed_origins = [
-    "http://localhost:3000",
-    os.getenv("FRONTEND_URL", "*") # Add your Vercel URL to Render Env Vars
-]
-
+# ══════════════════════════════════════════
+# CORS MIDDLEWARE
+# ══════════════════════════════════════════
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ----------------------------------------------------
-# ROUTES & AGENT IMPORT
-# ----------------------------------------------------
-from backend.routes.chat import router as chat_router
-from backend.routes.history import router as history_router
-from backend.routes.search import router as search_router
+# ══════════════════════════════════════════
+# LOAD AI AGENT ON STARTUP
+# ══════════════════════════════════════════
+@app.on_event("startup")
+async def startup_event():
+    print("\n🚀 Starting ANITS Campus Assistant API...")
 
+    # Test MongoDB connection
+    try:
+        from backend.models.database import db
+        if db is not None:
+            db.command("ping")
+            print("  ✓ MongoDB connected!")
+        else:
+            print("  ✗ MongoDB connection failed!")
+    except Exception as e:
+        print(f"  ✗ MongoDB error: {e}")
+
+    # Check content freshness
+    try:
+        from src.freshness import save_freshness_timestamp
+        save_freshness_timestamp()
+        print("  ✓ Content freshness checked!")
+    except Exception as e:
+        print(f"  ⚠️ Freshness check skipped: {e}")
+
+    # Load AI agent ONCE
+    app.state.chain = build_agent()
+    if app.state.chain:
+        print("  ✅ AI Agent loaded successfully!")
+    else:
+        print("  ✗ AI Agent failed to load!")
+
+# ══════════════════════════════════════════
+# INCLUDE ROUTES
+# ══════════════════════════════════════════
 app.include_router(chat_router, prefix="/api", tags=["Chat"])
-app.include_router(history_router, prefix="/api", tags=["History"])
 app.include_router(search_router, prefix="/api", tags=["Search"])
+app.include_router(history_router, prefix="/api", tags=["History"])
 
+# ══════════════════════════════════════════
+# ROOT ENDPOINT
+# ══════════════════════════════════════════
 @app.get("/")
 async def root():
-    return {"message": "ANITS Campus Assistant API is running!"}
-
-@app.get("/health")
-async def health():
-    # We check if the HF_TOKEN is present as a proxy for 'ready'
-    hf_ready = "configured" if os.getenv("HF_TOKEN") else "missing"
     return {
-        "status": "healthy", 
-        "embeddings": "HuggingFace-Inference-API",
-        "token_status": hf_ready
+        "message": "ANITS Campus Assistant API is running!",
+        "version": "1.0.0",
+        "status": "online",
+        "docs": "/docs"
     }
 
-
-if __name__ == "__main__":
-    import uvicorn
-    # Use the PORT env var provided by Render, default to 10000
-    port = int(os.environ.get("PORT", 10000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+# ══════════════════════════════════════════
+# HEALTH CHECK
+# ══════════════════════════════════════════
+@app.get("/health")
+async def health():
+    chain_status = "loaded" if hasattr(app.state, "chain") and app.state.chain else "failed"
+    return {
+        "status": "healthy",
+        "agent": chain_status
+    }

@@ -30,6 +30,15 @@ Visakhapatnam, Andhra Pradesh, India.
 Your job is to help students, freshers, and visitors get
 accurate information about the college.
 
+You have access to information about:
+- Departments and academic programs
+- Campus facilities (library, canteen, hostel, sports, medical)
+- Faculty contacts and HODs
+- Placement cell and company visits
+- Clubs, societies and campus events
+- Campus locations and directions
+- Administrative procedures
+
 Rules you must follow:
 1. Only answer based on the context provided below
 2. If answer is not in context say:
@@ -38,6 +47,8 @@ Rules you must follow:
 3. Keep answers clear, friendly and to the point
 4. Include specific details like timings, locations,
    contact numbers whenever available
+5. For location queries always mention the block and directions
+6. For contact queries always include email and phone if available
 
 Context:
 {context}
@@ -51,52 +62,56 @@ def build_agent():
     """
     Loads vector store + connects Groq LLM
     Returns a ready-to-use LCEL chain
+    No RAM restrictions on DigitalOcean!
     """
     print("\nInitializing ANITS Campus Assistant...")
 
-    # Check for API Key
+    # ── Check for API Key ──
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         print("  ✗ GROQ_API_KEY not found!")
+        print("    Add GROQ_API_KEY=your_key to .env file")
         return None
 
-    # Step 1: Load vector store
+    # ── Step 1: Load vector store ──
     vector_store = load_vector_store()
     if not vector_store:
         print("  ✗ Vector store not found!")
+        print("    Run: python src/vector_store.py first")
         return None
     print("  ✓ Vector store loaded")
 
-    # Step 2: Create retriever
+    # ── Step 2: Create retriever ──
     retriever = vector_store.as_retriever(
         search_type="similarity",
-        search_kwargs={"k": 4}
+        search_kwargs={"k": 5}
     )
     print("  ✓ Retriever ready")
 
-    # Step 3: Initialize Groq LLM
+    # ── Step 3: Initialize Groq LLM ──
     try:
         llm = ChatGroq(
             model="llama-3.3-70b-versatile",
             api_key=api_key,
-            temperature=0.3
+            temperature=0.3,
+            max_tokens=1024
         )
         print("  ✓ Groq LLM (Llama 3) connected")
     except Exception as e:
         print(f"  ✗ Failed to connect LLM: {e}")
         return None
 
-    # Step 4: Create prompt
+    # ── Step 4: Create prompt ──
     prompt = ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT),
         ("human", "{input}"),
     ])
 
-    # Step 5: Helper to format retrieved docs
+    # ── Step 5: Format retrieved docs ──
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
 
-    # Step 6: Build LCEL chain
+    # ── Step 6: Build LCEL chain ──
     chain = (
         {
             "context": retriever | format_docs,
@@ -127,7 +142,10 @@ def get_response(chain, question):
         answer = chain.invoke(question)
 
         if not answer or len(answer.strip()) == 0:
-            return "I don't have specific information about that. Please visit anits.org or contact the college office."
+            return (
+                "I don't have specific information about that. "
+                "Please visit anits.org or contact the college office."
+            )
 
         print(f"\n[Agent] Q: {question}")
         print(f"[Agent] A: {answer[:100]}...")
@@ -179,6 +197,7 @@ def chat_loop(chain):
 # TEST
 # ══════════════════════════════════════════
 if __name__ == "__main__":
+
     chain = build_agent()
 
     if not chain:
@@ -193,6 +212,10 @@ if __name__ == "__main__":
         "What departments are available in ANITS?",
         "Where is the placement cell?",
         "What facilities does ANITS have?",
+        "Who is the HOD of CSE?",
+        "When is TechNova fest?",
+        "Where is the canteen?",
+        "What is the TPO email?"
     ]
 
     for i, question in enumerate(test_questions, 1):
@@ -201,4 +224,6 @@ if __name__ == "__main__":
         print(f"Answer: {answer}")
         print("-" * 55)
 
+    print("\n✅ All tests done!")
+    print("Starting interactive chat...")
     chat_loop(chain)

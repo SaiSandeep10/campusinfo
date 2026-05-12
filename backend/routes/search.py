@@ -1,5 +1,5 @@
 # backend/routes/search.py
-# Advanced search with filters and multimedia support
+# Advanced search with filters
 
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
@@ -10,19 +10,13 @@ from src.agent import get_response
 
 router = APIRouter()
 
-
-# ----------------------------------------------------
-# REQUEST MODEL
-# ----------------------------------------------------
+# ── Request model ──
 class SearchRequest(BaseModel):
     query: str
     category: Optional[str] = None
     session_id: str = "default"
 
-
-# ----------------------------------------------------
-# RESPONSE MODEL
-# ----------------------------------------------------
+# ── Response model ──
 class SearchResponse(BaseModel):
     answer: str
     query: str
@@ -32,9 +26,9 @@ class SearchResponse(BaseModel):
     recommendations: Optional[list] = None
 
 
-# ----------------------------------------------------
+# ══════════════════════════════════════════
 # CATEGORY KEYWORDS
-# ----------------------------------------------------
+# ══════════════════════════════════════════
 CATEGORY_KEYWORDS = {
     "academics": [
         "department", "course", "syllabus", "exam",
@@ -63,26 +57,23 @@ CATEGORY_KEYWORDS = {
 }
 
 
-# ----------------------------------------------------
+# ══════════════════════════════════════════
 # CATEGORY DETECTION
-# ----------------------------------------------------
+# ══════════════════════════════════════════
 def detect_category(query: str) -> str:
     query_lower = query.lower()
     scores = {}
-
     for category, keywords in CATEGORY_KEYWORDS.items():
         score = sum(1 for word in keywords if word in query_lower)
         scores[category] = score
-
     best = max(scores, key=scores.get)
     return best if scores[best] > 0 else "general"
 
 
-# ----------------------------------------------------
-# CATEGORY CONTEXT BUILDER
-# ----------------------------------------------------
+# ══════════════════════════════════════════
+# FILTERED QUERY BUILDER
+# ══════════════════════════════════════════
 def build_filtered_query(query: str, category: str) -> str:
-    """Appends category context as plain string — no brackets!"""
     context_map = {
         "academics": "Focus on academic information, departments, courses and faculty.",
         "facilities": "Focus on campus facilities like library, canteen, hostel and sports.",
@@ -92,42 +83,29 @@ def build_filtered_query(query: str, category: str) -> str:
         "locations": "Focus on campus locations, directions and buildings.",
         "general": "Provide general campus information about ANITS."
     }
-
     context = context_map.get(category, context_map["general"])
     return f"{query}. {context}"
 
 
-# ----------------------------------------------------
-# MULTIMEDIA HELPER
-# ----------------------------------------------------
-def get_media(query: str, category: str) -> dict:
-    """Returns relevant media links based on category"""
+# ══════════════════════════════════════════
+# MEDIA HELPER
+# ══════════════════════════════════════════
+def get_media(category: str) -> dict:
     media_map = {
         "locations": {
-            "images": ["https://www.anits.edu.in/images/campus.jpg"],
             "map": "https://maps.google.com/?q=ANITS+Visakhapatnam"
         },
         "facilities": {
-            "images": ["https://www.anits.edu.in/images/library.jpg"],
-            "video": None
+            "images": ["https://www.anits.edu.in/images/library.jpg"]
         },
-        "placements": {
-            "images": [],
-            "video": None
-        },
-        "clubs": {
-            "images": [],
-            "video": None
-        }
     }
     return media_map.get(category, {})
 
 
-# ----------------------------------------------------
+# ══════════════════════════════════════════
 # RECOMMENDATIONS HELPER
-# ----------------------------------------------------
+# ══════════════════════════════════════════
 def get_recommendations(category: str) -> list:
-    """Returns follow-up question suggestions"""
     suggestions = {
         "academics": [
             "Who is the HOD of CSE department?",
@@ -168,47 +146,32 @@ def get_recommendations(category: str) -> list:
     return suggestions.get(category, suggestions["general"])
 
 
-# ----------------------------------------------------
-# SEARCH ENDPOINT
-# ----------------------------------------------------
+# ══════════════════════════════════════════
+# POST /api/search
+# ══════════════════════════════════════════
 @router.post("/search", response_model=SearchResponse)
 async def advanced_search(request: Request, body: SearchRequest):
-
     print(f"\n🔎 Query: {body.query}")
 
-    # Detect category
     category = body.category or detect_category(body.query)
     print(f"📂 Category: {category}")
 
-    # Build plain string query with category context
     filtered_query = build_filtered_query(body.query, category)
-    print(f"📝 Filtered query: {filtered_query}")
+    print(f"📝 Filtered: {filtered_query}")
 
-    # ── Get chain from app state (loaded ONCE on startup) ──
     chain = request.app.state.chain
 
     if not chain:
-        print("  ✗ Chain is None!")
         return SearchResponse(
             answer="AI agent is not available. Please try again later.",
             query=body.query,
             category=category,
             timestamp=datetime.now().isoformat(),
-            media=None,
             recommendations=get_recommendations(category)
         )
 
-    # Generate answer
     answer = get_response(chain, filtered_query)
-    print(f"✅ Answer generated: {answer[:100]}...")
 
-    # Get media
-    media = get_media(body.query, category)
-
-    # Get recommendations
-    recommendations = get_recommendations(category)
-
-    # Save to MongoDB
     try:
         from backend.models.chat import save_message, create_session, update_session
         create_session(body.session_id)
@@ -223,14 +186,14 @@ async def advanced_search(request: Request, body: SearchRequest):
         query=body.query,
         category=category,
         timestamp=datetime.now().isoformat(),
-        media=media,
-        recommendations=recommendations
+        media=get_media(category),
+        recommendations=get_recommendations(category)
     )
 
 
-# ----------------------------------------------------
-# SUGGESTED QUESTIONS
-# ----------------------------------------------------
+# ══════════════════════════════════════════
+# GET /api/search/suggestions
+# ══════════════════════════════════════════
 @router.get("/search/suggestions")
 async def get_suggestions(category: str = "general"):
     return {
@@ -239,17 +202,14 @@ async def get_suggestions(category: str = "general"):
     }
 
 
-# ----------------------------------------------------
-# DEBUG ENDPOINT
-# ----------------------------------------------------
+# ══════════════════════════════════════════
+# GET /api/debug
+# ══════════════════════════════════════════
 @router.get("/debug")
 async def debug(request: Request):
-    """Check agent status and test a query"""
     chain = request.app.state.chain
-
     if not chain:
         return {"status": "ERROR - chain is None!"}
-
     try:
         test_answer = get_response(chain, "What is ANITS?")
         return {
