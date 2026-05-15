@@ -96,9 +96,67 @@ def load_all_text():
     else:
         print("  ✗ No campus_map.json found!")
 
+    # ── 6. Academic Calendar CSV ──
+    calendar_file = os.path.join(BASE_DIR, "data/academic_calendar/academic_calendar.csv")
+    if os.path.exists(calendar_file):
+        df = pd.read_csv(calendar_file)
+        calendar_text = "\n\nACADEMIC CALENDAR:\n"
+        for _, row in df.iterrows():
+            calendar_text += (
+                f"Event: {row['Event']} | "
+                f"Date: {row['Date']} | "
+                f"Type: {row['Type']} | "
+                f"Description: {row['Description']} | "
+                f"Important: {row['Important']}\n"
+            )
+        all_text += calendar_text
+        print(f"  ✓ Loaded {len(df)} academic calendar events")
+    else:
+        print("  ✗ No academic_calendar.csv found!")
+
+    # ── 7. Student Procedures CSV ──
+    procedures_file = os.path.join(BASE_DIR, "data/procedures/student_procedures.csv")
+    if os.path.exists(procedures_file):
+        df = pd.read_csv(procedures_file)
+        procedures_text = "\n\nSTUDENT PROCEDURES:\n"
+        for _, row in df.iterrows():
+            procedures_text += (
+                f"Procedure: {row['Procedure']} | "
+                f"Steps: {row['Steps']} | "
+                f"Department: {row['Department']} | "
+                f"Contact: {row['Contact']} | "
+                f"Documents Required: {row['Documents Required']} | "
+                f"Time Required: {row['Time Required']}\n"
+            )
+        all_text += procedures_text
+        print(f"  ✓ Loaded {len(df)} student procedures")
+    else:
+        print("  ✗ No student_procedures.csv found!")
+
+    # ── 8. Clubs Database CSV ──
+    clubs_file = os.path.join(BASE_DIR, "data/clubs/clubs_database.csv")
+    if os.path.exists(clubs_file):
+        df = pd.read_csv(clubs_file)
+        clubs_text = "\n\nCLUBS AND SOCIETIES:\n"
+        for _, row in df.iterrows():
+            clubs_text += (
+                f"Club: {row['Club Name']} | "
+                f"Category: {row['Category']} | "
+                f"Description: {row['Description']} | "
+                f"Faculty Coordinator: {row['Faculty Coordinator']} | "
+                f"Contact: {row['Contact Email']} | "
+                f"Meeting Day: {row['Meeting Day']} | "
+                f"Members: {row['Members']} | "
+                f"How to Join: {row['How to Join']} | "
+                f"Activities: {row['Activities']}\n"
+            )
+        all_text += clubs_text
+        print(f"  ✓ Loaded {len(df)} clubs and societies")
+    else:
+        print("  ✗ No clubs_database.csv found!")
+
     print(f"  Total text loaded: {len(all_text)} characters")
     return all_text
-
 
 # ══════════════════════════════════════════
 # FUNCTION 2 — Split Text into Chunks

@@ -1,0 +1,21 @@
+Event,Date,Type,Description,Important
+Odd Semester Begins,July 1 2025,Academic,Start of odd semester classes,Yes
+Internal Assessment 1,August 15 2025,Exam,First internal assessment for all subjects,Yes
+Independence Day Holiday,August 15 2025,Holiday,National holiday no classes,No
+Internal Assessment 2,September 20 2025,Exam,Second internal assessment for all subjects,Yes
+Dasara Holidays,October 2 2025,Holiday,Festival holidays for 5 days,No
+Odd Semester End,November 15 2025,Academic,Last day of odd semester classes,Yes
+Odd Semester Exams,November 20 2025,Exam,University end semester examinations begin,Yes
+Even Semester Begins,January 2 2026,Academic,Start of even semester classes,Yes
+Internal Assessment 3,February 10 2026,Exam,Third internal assessment for all subjects,Yes
+Internal Assessment 4,March 15 2026,Exam,Fourth internal assessment for all subjects,Yes
+Ugadi Holiday,March 30 2026,Holiday,Telugu New Year festival holiday,No
+Even Semester End,April 30 2026,Academic,Last day of even semester classes,Yes
+Even Semester Exams,May 5 2026,Exam,University end semester examinations begin,Yes
+Summer Vacation,May 20 2026,Holiday,Summer vacation begins,No
+ANITS UTSAV Cultural Fest,March 10 2026,Event,Annual cultural festival,Yes
+TechNova Technical Fest,April 5 2026,Event,Annual technical festival,Yes
+Sports Day,January 15 2026,Event,Annual sports day,Yes
+Freshers Day,August 10 2025,Event,Welcome event for new students,Yes
+Graduation Day,June 15 2026,Event,Annual convocation ceremony,Yes
+GATE Coaching Begins,November 1 2025,Academic,Free GATE coaching for final year,No

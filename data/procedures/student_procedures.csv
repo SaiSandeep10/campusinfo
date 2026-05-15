@@ -1,0 +1,11 @@
+Procedure,Steps,Department,Contact,Documents Required,Time Required
+Admission Process,"1. Check eligibility on anits.org 2. Fill online application 3. Pay application fee 4. Appear for counselling 5. Pay tuition fee 6. Submit documents",Admissions Office,admissions@anits.org,"10th marks memo 12th marks memo Transfer certificate Migration certificate Caste certificate Passport photos",7 days
+Fee Payment,"1. Login to student portal 2. Click Fee Payment 3. Select semester 4. Choose payment method 5. Pay online or at bank 6. Download receipt",Accounts Section,accounts@anits.org,"Student ID Fee challan",1 day
+Hostel Admission,"1. Fill hostel application form 2. Submit to hostel warden 3. Pay hostel fee 4. Get room allotment 5. Collect keys",Hostel Office,hostel@anits.org,"College ID proof Fee receipt Parent consent letter",3 days
+Library Membership,"1. Visit library with college ID 2. Fill membership form 3. Submit 2 passport photos 4. Get library card",Library,library@anits.org,"College ID 2 passport photos",Same day
+Bonafide Certificate,"1. Submit application to exam cell 2. Pay Rs 50 fee 3. Collect after 2 days",Exam Cell,examcell@anits.org,"Application form Fee receipt",2 days
+Transcript Request,"1. Apply at exam cell 3 weeks before needed 2. Pay Rs 500 per copy 3. Collect on specified date",Exam Cell,examcell@anits.org,"Application form Fee receipt Marks memos",3 weeks
+Internship NOC,"1. Submit company offer letter to TPO 2. Fill NOC application 3. Get HOD signature 4. Submit to principal office 5. Collect NOC",Placement Cell,tpo@anits.org,"Company offer letter HOD approval form",5 days
+Transfer Certificate,"1. Apply at admin office 2. Clear all dues 3. Get NOC from library and hostel 4. Submit to principal 5. Collect TC",Admin Office,admin@anits.org,"Application form Fee clearance Library NOC Hostel NOC",7 days
+Scholarship Application,"1. Check eligibility on scholarship portal 2. Fill online form 3. Submit documents to welfare office 4. Track status online",Welfare Office,welfare@anits.org,"Income certificate Caste certificate Marks memos Bank passbook",15 days
+Medical Leave,"1. Visit medical centre 2. Get medical certificate 3. Submit to class teacher within 3 days 4. Get attendance condonation if needed",Medical Centre,medical@anits.org,"Medical certificate from doctor",3 days
