@@ -47,9 +47,8 @@ async def startup_event():
 
     # Test MongoDB connection
     try:
-        from backend.models.database import db
+        from backend.models.database import db, chat_collection
         if db is not None:
-            db.command("ping")
             print("  ✓ MongoDB connected!")
         else:
             print("  ✗ MongoDB connection failed!")
