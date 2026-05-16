@@ -13,16 +13,35 @@ const SUGGESTED_QUESTIONS = [
 
 export default function ChatBox({ activeCategory = "general" }) {
 
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content:
-        'Hi! 👋 I am your ANITS Campus Assistant. Ask me anything about departments, facilities, placements, events, and more!',
-      media: null,
-      recommendations: [],
-      timestamp: new Date().toLocaleTimeString()
-    }
-  ]);
+  const [messages, setMessages] = useState([]);
+
+  // Load personalized greeting on mount
+  useEffect(() => {
+    const loadGreeting = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/personalization/greeting?session_id=default`
+        );
+        const data = await response.json();
+        setMessages([{
+          role: 'assistant',
+          content: data.greeting || 'Hi! 👋 I am your ANITS Campus Assistant!',
+          media: null,
+          recommendations: [],
+          timestamp: new Date().toLocaleTimeString()
+        }]);
+      } catch {
+        setMessages([{
+          role: 'assistant',
+          content: 'Hi! 👋 I am your ANITS Campus Assistant. Ask me anything about ANITS!',
+          media: null,
+          recommendations: [],
+          timestamp: new Date().toLocaleTimeString()
+        }]);
+      }
+    };
+    loadGreeting();
+  }, []);
 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);

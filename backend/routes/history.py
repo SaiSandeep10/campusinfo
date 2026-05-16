@@ -92,3 +92,42 @@ async def get_gaps():
         return {"information_gaps": get_information_gaps(10)}
     except Exception as e:
         return {"error": str(e)}
+    
+
+# ══════════════════════════════════════════
+# GET /api/personalization/profile
+# ══════════════════════════════════════════
+@router.get("/personalization/profile")
+async def get_profile(session_id: str = "default"):
+    """Returns user interest profile"""
+    try:
+        from src.personalization import build_user_profile
+        return build_user_profile(session_id)
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ══════════════════════════════════════════
+# GET /api/personalization/greeting
+# ══════════════════════════════════════════
+@router.get("/personalization/greeting")
+async def get_greeting(session_id: str = "default"):
+    """Returns personalized greeting"""
+    try:
+        from src.personalization import get_personalized_greeting
+        return {"greeting": get_personalized_greeting(session_id)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ══════════════════════════════════════════
+# GET /api/personalization/predictions
+# ══════════════════════════════════════════
+@router.get("/personalization/predictions")
+async def get_predictions(session_id: str = "default"):
+    """Returns predictive suggestions"""
+    try:
+        from src.personalization import get_predictive_suggestions
+        return {"predictions": get_predictive_suggestions(session_id)}
+    except Exception as e:
+        return {"error": str(e)}
