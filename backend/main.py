@@ -63,6 +63,13 @@ async def startup_event():
     except Exception as e:
         print(f"  ⚠️ Freshness check skipped: {e}")
 
+    # Start background scheduler
+    try:
+        from src.scheduler import start_scheduler
+        start_scheduler()
+    except Exception as e:
+        print(f"  ⚠️ Scheduler skipped: {e}")
+
     # Load AI agent ONCE
     app.state.chain = build_agent()
     if app.state.chain:
