@@ -7,6 +7,7 @@ from typing import Optional
 from datetime import datetime
 
 from src.agent import get_response
+from src.recommendations import get_personalized_recommendations, get_related_questions
 
 router = APIRouter()
 
@@ -181,13 +182,18 @@ async def advanced_search(request: Request, body: SearchRequest):
     except Exception as e:
         print(f"  ⚠️ MongoDB save failed: {e}")
 
+    # Build recommendations: prefer personalized, fall back to related questions
+    recommendations = get_personalized_recommendations(body.session_id)
+    if not recommendations:
+        recommendations = get_related_questions(body.query)
+
     return SearchResponse(
         answer=answer,
         query=body.query,
         category=category,
         timestamp=datetime.now().isoformat(),
         media=get_media(category),
-        recommendations=get_recommendations(category)
+        recommendations=recommendations,
     )
 
 

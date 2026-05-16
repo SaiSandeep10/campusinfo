@@ -78,6 +78,76 @@ PAGES_TO_SCRAPE = [
         "category": "academics",
         "label": "IT Department"
     },
+    {
+        "url": "https://www.anits.org/department/cse",
+        "category": "academics",
+        "label": "CSE Department"
+    },
+    {
+        "url": "https://www.anits.org/department/cse-ds",
+        "category": "academics",
+        "label": "CSE-DS Department"
+    },
+    {
+        "url": "https://www.anits.org/department/cse-ai-ml",
+        "category": "academics",
+        "label": "CSE-AI-ML Department"
+    },
+    {
+        "url": "https://www.anits.org/department/chemical",
+        "category": "academics",
+        "label": "Chemical Department"
+    },
+    {
+        "url": "https://www.anits.org/department/civil",
+        "category": "academics",
+        "label": "Civil Department"
+    },
+    {
+        "url": "https://www.anits.org/department/mech",
+        "category": "academics",
+        "label": "Mechanical Department"
+    },
+    {
+        "url": "https://www.anits.org/department/it",
+        "category": "academics",
+        "label": "IT Department"
+    },
+    {
+        "url": "https://www.anits.org/teaching_staff/cse",
+        "category": "academics",
+        "label": "CSE Faculty"
+    },
+    {
+        "url": "https://www.anits.org/teaching_staff/cse-ds",
+        "category": "academics",
+        "label": "CSE-DS Faculty"
+    },
+    {
+        "url": "https://www.anits.org/teaching_staff/cse-ai-ml",
+        "category": "academics",
+        "label": "CSE-AI-ML Faculty"
+    },
+    {
+        "url": "https://www.anits.org/teaching_staff/chemical",
+        "category": "academics",
+        "label": "Chemical Faculty"
+    },
+    {
+        "url": "https://www.anits.org/teaching_staff/civil",
+        "category": "academics",
+        "label": "Civil Faculty"
+    },
+    {
+        "url": "https://www.anits.org/teaching_staff/mech",
+        "category": "academics",
+        "label": "Mechanical Faculty"
+    },
+    {
+        "url":"https://www.anits.org/teaching_staff/it",
+        "category": "academics",
+        "label": "IT Faculty"
+    }
 ]
 
 

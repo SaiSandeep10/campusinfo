@@ -54,3 +54,41 @@ async def get_freshness():
         return get_freshness_status()
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+# ══════════════════════════════════════════
+# GET /api/analytics
+# ══════════════════════════════════════════
+@router.get("/analytics")
+async def get_analytics():
+    """Returns comprehensive analytics report"""
+    try:
+        from src.analytics import get_full_analytics
+        return get_full_analytics()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ══════════════════════════════════════════
+# GET /api/analytics/popular
+# ══════════════════════════════════════════
+@router.get("/analytics/popular")
+async def get_popular():
+    """Returns most popular questions"""
+    try:
+        from src.analytics import get_popular_queries
+        return {"popular_queries": get_popular_queries(10)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ══════════════════════════════════════════
+# GET /api/analytics/gaps
+# ══════════════════════════════════════════
+@router.get("/analytics/gaps")
+async def get_gaps():
+    """Returns information gaps"""
+    try:
+        from src.analytics import get_information_gaps
+        return {"information_gaps": get_information_gaps(10)}
+    except Exception as e:
+        return {"error": str(e)}
