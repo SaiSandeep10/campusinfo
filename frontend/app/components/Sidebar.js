@@ -37,10 +37,15 @@ export default function Sidebar({ activeCategory, onCategoryChange }) {
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-700">
+        <a
+          href="/analytics"
+          className="block w-full text-center px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-gray-300 hover:text-white transition mb-3"
+        >
+          📊 Analytics Dashboard
+        </a>
         <p className="text-gray-500 text-xs">Powered by Llama 3 + FAISS</p>
         <p className="text-gray-600 text-xs mt-1">ANITS Visakhapatnam</p>
       </div>
-
     </div>
   )
 }
