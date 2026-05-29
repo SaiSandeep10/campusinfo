@@ -131,3 +131,30 @@ async def get_predictions(session_id: str = "default"):
         return {"predictions": get_predictive_suggestions(session_id)}
     except Exception as e:
         return {"error": str(e)}
+
+
+# ══════════════════════════════════════════
+# GET /api/cache/stats
+# ══════════════════════════════════════════
+@router.get("/cache/stats")
+async def cache_stats():
+    """Returns cache performance stats"""
+    try:
+        from src.cache import get_cache_stats
+        return get_cache_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ══════════════════════════════════════════
+# DELETE /api/cache/clear
+# ══════════════════════════════════════════
+@router.delete("/cache/clear")
+async def cache_clear():
+    """Clears the response cache"""
+    try:
+        from src.cache import clear_cache
+        count = clear_cache()
+        return {"message": f"Cleared {count} cached entries"}
+    except Exception as e:
+        return {"error": str(e)}

@@ -7,6 +7,7 @@ from typing import Optional
 from datetime import datetime
 
 from src.agent import get_response
+from src.cache import get_cached_response, save_to_cache
 from src.recommendations import get_personalized_recommendations, get_related_questions
 
 router = APIRouter()
@@ -154,6 +155,21 @@ def get_recommendations(category: str) -> list:
 async def advanced_search(request: Request, body: SearchRequest):
     print(f"\n🔎 Query: {body.query}")
 
+    # Rate limiting
+    try:
+        from src.rate_limiter import is_rate_limited
+        client_ip = request.client.host
+        if is_rate_limited(client_ip):
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=429,
+                detail="Too many requests. Please wait a moment!"
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"  [RateLimit] Error: {e}")
+
     category = body.category or detect_category(body.query)
     print(f"📂 Category: {category}")
 
@@ -171,7 +187,24 @@ async def advanced_search(request: Request, body: SearchRequest):
             recommendations=get_recommendations(category)
         )
 
+    # Check cache first
+    cached = get_cached_response(body.query, category)
+    if cached:
+        print(f"  ⚡ Returning cached response!")
+        return SearchResponse(
+            answer=cached,
+            query=body.query,
+            category=category,
+            timestamp=datetime.now().isoformat(),
+            media=get_media(category),
+            recommendations=get_recommendations(category)
+        )
+
+    # Generate answer from AI
     answer = get_response(chain, filtered_query)
+
+    # Save to cache for next time
+    save_to_cache(body.query, answer, category)
 
     try:
         from backend.models.chat import save_message, create_session, update_session
