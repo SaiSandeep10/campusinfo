@@ -1,231 +1,380 @@
-# 🎓 ANITS Campus Assistant
+# 🎓 ANITS Campus Info Chatbot
 
-> An AI-powered chatbot that answers questions about Anil Neerukonda Institute of Technology and Sciences (ANITS), Visakhapatnam.
+An AI-powered campus information assistant built for **Anil Neerukonda Institute of Technology and Sciences (ANITS), Visakhapatnam**.
 
+The chatbot provides instant, intelligent, and accurate answers related to:
 
+* Departments
+* Placements
+* Faculty contacts
+* Clubs & events
+* Campus facilities
+* Academic procedures
+* Student services
 
----
-
-## 📌 What is This?
-
-ANITS Campus Assistant is an AI chatbot that helps students, freshers, and visitors get instant answers about:
-
-- 🏫 Departments and courses
-- 🏢 Campus facilities (library, hostel, canteen, labs)
-- 💼 Placement cell and internships
-- 🎭 Clubs and events
-- 📋 Admission procedures
-- 📞 Faculty and department contacts
+Built using **RAG (Retrieval-Augmented Generation)** architecture with semantic search, vector embeddings, and LLM-powered responses.
 
 ---
 
 ## 🚀 Live Demo
 
-👉 **[Click here to try the chatbot](https://campusinfo-b2brexg6m6qgv6q24wj5bf.streamlit.app/)**
+| Service             | URL                                                                              |
+| ------------------- | -------------------------------------------------------------------------------- |
+| Frontend            | https://your-vercel-url.vercel.app                                               |
+| Backend API         | https://anits-campus-api-fvfaghdxgrdvd4ae.centralindia-01.azurewebsites.net      |
+| API Docs            | https://anits-campus-api-fvfaghdxgrdvd4ae.centralindia-01.azurewebsites.net/docs |
+| Analytics Dashboard | https://your-vercel-url.vercel.app/analytics                                     |
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Streamlit |
-| AI Model | Groq (Llama 3.3 70B) |
-| Embeddings | HuggingFace (all-MiniLM-L6-v2) |
-| Vector Database | FAISS |
-| LLM Framework | LangChain LCEL |
-| Web Scraping | BeautifulSoup4 |
-| PDF Processing | PyPDF |
-| Deployment | Streamlit Cloud |
+| Layer        | Technology                        |
+| ------------ | --------------------------------- |
+| Frontend     | Next.js 14 + React + Tailwind CSS |
+| Backend      | FastAPI + Uvicorn                 |
+| Database     | MongoDB Atlas                     |
+| AI Framework | LangChain LCEL                    |
+| Vector Store | FAISS                             |
+| Embeddings   | HuggingFace all-MiniLM-L6-v2      |
+| LLM          | Groq Llama 3.3 70B                |
+| Scraping     | BeautifulSoup4                    |
+| Deployment   | Azure App Service + Vercel        |
 
 ---
 
-## 📁 Project Structure
+# ✨ Features
 
-```
-campus-chatbot/
-├── data/
-│   ├── handbooks/          # College PDF handbooks
-│   ├── scraped/            # Scraped website content
-│   │   ├── website.txt     # ANITS website text
-│   │   └── chunks.txt      # PDF text chunks
-│   └── vector_store/       # FAISS index files
-├── src/
-│   ├── ingest.py           # PDF processing
-│   ├── scraper.py          # Website scraping
-│   ├── vector_store.py     # Embeddings + FAISS
-│   ├── agent.py            # LangChain AI agent
-│   
-├── app.py                  # Streamlit chat interface
-├── requirements.txt        # Python dependencies
-├── .env                    # API keys (never commit!)
-├── .gitignore              # Git ignore rules
-└── README.md               # This file
+## ✅ Core Features
+
+* Multi-source knowledge base (PDF + CSV + JSON + Web)
+* Semantic search using FAISS vector database
+* AI-powered responses using Groq Llama 3.3 70B
+* Category-based intelligent filtering
+* Persistent chat history using MongoDB
+* FastAPI REST API architecture
+
+---
+
+## 🚀 Advanced Features
+
+* Personalized greetings based on user history
+* Intelligent recommendation engine
+* Predictive suggestions using academic calendar
+* Background scheduler for automated scraping
+* Content freshness monitoring
+* Response caching system
+* API rate limiting for security
+* Analytics dashboard with usage insights
+* Export chat history functionality
+
+---
+
+# 🏗️ System Architecture
+
+```text
+Student Question
+        ↓
+Next.js Frontend (Vercel)
+        ↓
+FastAPI Backend (Azure)
+        ↓
+Category Detection & Query Filtering
+        ↓
+FAISS Semantic Search
+        ↓
+HuggingFace Embeddings
+        ↓
+Groq Llama 3.3 70B
+        ↓
+MongoDB Atlas (History Storage)
+        ↓
+AI Response to User
 ```
 
 ---
 
-## ⚙️ How It Works
+# 📂 Project Structure
 
-```
-College PDF + ANITS Website
-          ↓
-   ingest.py + scraper.py     ← collect data
-          ↓
-   vector_store.py            ← store as embeddings in FAISS
-          ↓
-   agent.py                   ← find relevant chunks + ask Groq AI
-          ↓
-   app.py                     ← display answer in chat UI
+```text
+campusinfo/
+│
+├── src/                          # AI Core
+│   ├── agent.py
+│   ├── vector_store.py
+│   ├── scraper.py
+│   ├── ingest.py
+│   ├── freshness.py
+│   ├── recommendations.py
+│   ├── analytics.py
+│   ├── personalization.py
+│   ├── scheduler.py
+│   └── cache.py
+│
+├── backend/                      # FastAPI Backend
+│   ├── main.py
+│   ├── routes/
+│   └── models/
+│
+├── frontend/                     # Next.js Frontend
+│   └── app/
+│       ├── components/
+│       └── analytics/
+│
+├── data/                         # Knowledge Base
+│   ├── contacts/
+│   ├── events/
+│   ├── locations/
+│   ├── academic_calendar/
+│   ├── procedures/
+│   ├── clubs/
+│   ├── scraped/
+│   └── vector_store/
+│
+└── requirements.txt
 ```
 
 ---
 
-## 🏃 Setup Instructions
+# ⚙️ Local Setup
 
-### Prerequisites
-- Python 3.11
-- Git
-- A free Groq API key from [console.groq.com](https://console.groq.com)
+## 1️⃣ Clone Repository
 
----
-
-### Step 1 — Clone the Repository
 ```bash
 git clone https://github.com/SaiSandeep10/campusinfo.git
 cd campusinfo
 ```
 
-### Step 2 — Create Virtual Environment
+---
+
+## 2️⃣ Create Python Virtual Environment
+
+### Windows
+
 ```bash
-py -3.11 -m venv venv
-
-# Windows
+python -m venv venv
 venv\Scripts\activate
+```
 
-# Mac/Linux
+### Mac/Linux
+
+```bash
+python -m venv venv
 source venv/bin/activate
 ```
 
-### Step 3 — Install Dependencies
+Install dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 4 — Set Up API Key
-Create a `.env` file in the root folder:
-```
-GROQ_API_KEY=your_groq_api_key_here
-```
-Get your free API key from [console.groq.com](https://console.groq.com)
+---
 
-### Step 5 — Add College Data
-Place your college handbook PDF in:
-```
-data/handbooks/handbook.pdf
+## 3️⃣ Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+GROQ_API_KEY=your_groq_api_key
+MONGODB_URL=your_mongodb_connection_string
 ```
 
-### Step 6 — Build the Knowledge Base
-Run these commands in order:
+---
+
+## 4️⃣ Build Knowledge Base
+
 ```bash
-python src/ingest.py        # Process PDF
-python src/scraper.py       # Scrape website
-python src/vector_store.py  # Build FAISS index
+python src/scraper.py
+python src/ingest.py
+python src/vector_store.py
 ```
 
-### Step 7 — Run the App
+---
+
+## 5️⃣ Run Backend Server
+
 ```bash
-streamlit run app.py
+uvicorn backend.main:app --reload --port 8000
 ```
 
-Open your browser and go to: **http://localhost:8501**
+Backend runs on:
 
----
-
-## 🌐 Deployment on Streamlit Cloud
-
-1. Push your code to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your GitHub repo
-4. Set main file path: `app.py`
-5. Add secret in Settings:
-```toml
-GROQ_API_KEY = "your_key_here"
-```
-6. Click **Deploy**!
-
----
-
-## 👥 Team Members
-
-| Name | Role | Responsible File |
-|------|------|-----------------|
-| Sampathirao Niranjan Raju | Team Lead  | `src/ingest.py` |
-| Sai Dinesh Alugoji | UI | `app.py` |
-| Talasu Chethris | Scraper Dev | `src/scraper.py` |
-| Sai Sandeep Sadhu | AI Engineer | `src/vector_store.py` + `src/agent.py` |
-
----
-
-## 📦 Requirements
-
-```
-langchain
-langchain-community
-langchain-text-splitters
-langchain-groq
-langchain-huggingface
-groq
-sentence-transformers
-faiss-cpu
-streamlit
-beautifulsoup4
-pypdf
-pandas
-requests
-python-dotenv
-python-docx
+```text
+http://127.0.0.1:8000
 ```
 
 ---
 
-## ❓ Sample Questions to Ask
+## 6️⃣ Setup Frontend
 
-- *"What departments are available in ANITS?"*
-- *"Where is the placement cell located?"*
-- *"What are the library timings?"*
-- *"How do I join the coding club?"*
-- *"What facilities does ANITS have?"*
-- *"How do I apply for a bonafide certificate?"*
+```bash
+cd frontend
+npm install
+```
 
----
+Create `frontend/.env.local`
 
-## ⚠️ Common Issues & Fixes
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+```
 
-| Issue | Fix |
-|-------|-----|
-| `ModuleNotFoundError` | Run `pip install -r requirements.txt` |
-| `GROQ_API_KEY not found` | Check your `.env` file exists |
-| `Vector store not found` | Run `python src/vector_store.py` first |
-| `Git push rejected` | Run `git pull origin main` first |
-| App fails on Streamlit Cloud | Add `GROQ_API_KEY` in Streamlit Secrets |
+Run frontend:
 
+```bash
+npm run dev
+```
 
+Frontend runs on:
 
-## 📄 License
-
-This project is licensed under the MIT License.
+```text
+http://localhost:3000
+```
 
 ---
 
-## 🙏 Acknowledgements
+# 📡 API Endpoints
 
-- [ANITS College](https://www.anits.org) for the campus information
-- [Groq](https://groq.com) for free LLM API
-- [HuggingFace](https://huggingface.co) for free embeddings
-- [LangChain](https://langchain.com) for the AI framework
-- [Streamlit](https://streamlit.io) for the web interface
+| Method | Endpoint                           | Description               |
+| ------ | ---------------------------------- | ------------------------- |
+| GET    | `/`                                | Health Check              |
+| GET    | `/health`                          | Agent Status              |
+| POST   | `/api/ask`                         | Basic Chat                |
+| POST   | `/api/search`                      | Advanced Search           |
+| GET    | `/api/history`                     | Chat History              |
+| GET    | `/api/categories`                  | Categories List           |
+| GET    | `/api/freshness`                   | Content Freshness         |
+| GET    | `/api/analytics`                   | Usage Analytics           |
+| GET    | `/api/personalization/greeting`    | Personalized Greeting     |
+| GET    | `/api/personalization/predictions` | Predictive Suggestions    |
+| GET    | `/api/cache/stats`                 | Cache Statistics          |
+| GET    | `/docs`                            | Swagger API Documentation |
 
 ---
 
-*Built with ❤️ *
+# 📊 Data Sources
+
+| Source             | Format       | Content                             |
+| ------------------ | ------------ | ----------------------------------- |
+| ANITS Website      | Web Scraping | Departments, placements, facilities |
+| College Handbook   | PDF          | Regulations & policies              |
+| Faculty Directory  | CSV          | Staff contacts                      |
+| Events Database    | CSV          | Campus events                       |
+| Campus Map         | JSON         | Locations & directions              |
+| Academic Calendar  | CSV          | Semester schedules                  |
+| Student Procedures | CSV          | Administrative procedures           |
+| Clubs Database     | CSV          | Student clubs & societies           |
+
+---
+
+# ☁️ Deployment
+
+## Backend Deployment — Azure App Service
+
+### Environment Variables
+
+```env
+GROQ_API_KEY=your_key
+MONGODB_URL=your_mongodb_url
+PYTHONPATH=/home/site/wwwroot
+```
+
+### Startup Command
+
+```bash
+uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```
+
+---
+
+## Frontend Deployment — Vercel
+
+### Environment Variable
+
+```env
+NEXT_PUBLIC_API_URL=https://your-azure-url.azurewebsites.net
+```
+
+### Configuration
+
+```text
+Framework Preset : Next.js
+Root Directory   : frontend
+```
+
+---
+
+# 📈 Performance Metrics
+
+| Metric                | Value               |
+| --------------------- | ------------------- |
+| Vector Chunks         | 308                 |
+| Knowledge Base Size   | 129,000+ characters |
+| Cache TTL             | 60 minutes          |
+| Rate Limit            | 30 requests/minute  |
+| Average Response Time | 2–4 seconds         |
+| Supported Categories  | 6                   |
+
+---
+
+# 👥 Team
+
+| Name          | Role                            |
+| ------------- | ------------------------------- |
+| Sai Sandeep   | Team Lead, Frontend, Deployment |
+| Sai Dinesh    | Data Processing, PDF Ingestion  |
+| Niranjan Raju | Web Scraping, Student Services  |
+| Chethris      | MongoDB, Search Routes          |
+
+### Institution
+
+**ANITS — Anil Neerukonda Institute of Technology and Sciences**
+
+### Project Duration
+
+**8 Weeks**
+
+### Track
+
+**Track B (Advanced)**
+
+---
+
+# 🎓 Learning Outcomes
+
+* Retrieval-Augmented Generation (RAG)
+* Semantic Search Systems
+* Vector Databases with FAISS
+* Full Stack Development
+* FastAPI Backend Development
+* MongoDB Integration
+* Cloud Deployment using Azure & Vercel
+* AI Personalization & Analytics
+* Automated Data Pipelines
+
+---
+
+# 📝 License
+
+This project was developed for educational purposes as part of the **AI Agent Development Course at ANITS**.
+
+---
+
+# ❤️ Acknowledgements
+
+Special thanks to:
+
+* ANITS Faculty & Mentors
+* Groq
+* HuggingFace
+* LangChain
+* FastAPI Community
+* Open Source Contributors
+
+---
+
+<div align="center">
+
+### ⭐ Built with passion by Team ANITS Campus Assistant ⭐
+
+</div>
