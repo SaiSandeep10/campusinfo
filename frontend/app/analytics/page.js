@@ -27,21 +27,24 @@ export default function AnalyticsPage() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-gray-950">
+    <div className="flex items-center justify-center h-screen"
+      style={{ background: 'var(--bg-primary)' }}>
       <div className="text-center">
         <div className="flex gap-2 justify-center mb-4">
-          <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-          <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-          <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+          {[0, 150, 300].map((delay, i) => (
+            <span key={i} className="w-3 h-3 rounded-full animate-bounce"
+              style={{ background: '#3B82F6', animationDelay: `${delay}ms` }} />
+          ))}
         </div>
-        <p className="text-gray-400">Loading Analytics...</p>
+        <p style={{ color: '#94A3B8' }}>Loading Analytics...</p>
       </div>
     </div>
   )
 
   if (error) return (
-    <div className="flex items-center justify-center h-screen bg-gray-950">
-      <p className="text-red-400">Error: {error}</p>
+    <div className="flex items-center justify-center h-screen"
+      style={{ background: 'var(--bg-primary)' }}>
+      <p style={{ color: '#EF4444' }}>Error: {error}</p>
     </div>
   )
 
@@ -51,68 +54,124 @@ export default function AnalyticsPage() {
   const activity = analytics?.daily_activity || []
   const gaps = analytics?.information_gaps || []
 
-  return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
+  const categoryColors = {
+    academics: '#3B82F6',
+    facilities: '#10B981',
+    placements: '#F59E0B',
+    clubs: '#8B5CF6',
+    contacts: '#06B6D4',
+    locations: '#EF4444',
+    general: '#94A3B8',
+  }
 
-      {/* Header */}
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+  return (
+    <div style={{
+      background: 'var(--bg-primary)',
+      minHeight: '100vh',
+      overflowY: 'auto',
+      color: 'var(--text-primary)',
+      padding: '24px',
+      fontFamily: 'Space Grotesk, sans-serif'
+    }}>
+
+      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+
+        {/* ── Header ── */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
           <div>
-            <h1 className="text-3xl font-bold text-white">📊 Analytics Dashboard</h1>
-            <p className="text-gray-400 mt-1">ANITS Campus Assistant Usage Insights</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '10px',
+                background: 'linear-gradient(135deg, #3B82F6, #06B6D4)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontWeight: 'bold', fontSize: '14px', color: 'white'
+              }}>AN</div>
+              <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)', margin: 0 }}>
+                Analytics Dashboard
+              </h1>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: '13px', margin: 0 }}>
+              ANITS Campus Assistant — Usage Insights
+            </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={fetchAnalytics}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm transition"
-            >
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={fetchAnalytics}
+              style={{
+                padding: '8px 16px', borderRadius: '10px', fontSize: '13px',
+                background: 'rgba(59,130,246,0.15)', color: '#3B82F6',
+                border: '1px solid rgba(59,130,246,0.3)', cursor: 'pointer',
+                fontFamily: 'Space Grotesk, sans-serif'
+              }}>
               🔄 Refresh
             </button>
-            <a
-              href="/"
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition"
-            >
+            <a href="/"
+              style={{
+                padding: '8px 16px', borderRadius: '10px', fontSize: '13px',
+                background: 'var(--bg-card)', color: 'var(--text-secondary)',
+                border: '1px solid var(--border-color)', textDecoration: 'none',
+                display: 'inline-flex', alignItems: 'center'
+              }}>
               ← Back to Chat
             </a>
           </div>
         </div>
 
-        {/* Overall Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* ── Stats Cards ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
           {[
-            { label: "Total Messages", value: stats.total_messages || 0, icon: "💬", color: "blue" },
-            { label: "Total Sessions", value: stats.total_sessions || 0, icon: "👥", color: "green" },
-            { label: "Today", value: stats.messages_today || 0, icon: "📅", color: "purple" },
-            { label: "This Week", value: stats.messages_this_week || 0, icon: "📈", color: "orange" },
+            { label: "Total Messages", value: stats.total_messages || 0, icon: "💬", color: '#3B82F6' },
+            { label: "Total Sessions", value: stats.total_sessions || 0, icon: "👥", color: '#10B981' },
+            { label: "Today", value: stats.messages_today || 0, icon: "📅", color: '#8B5CF6' },
+            { label: "This Week", value: stats.messages_this_week || 0, icon: "📈", color: '#F59E0B' },
           ].map((stat, i) => (
-            <div key={i} className="bg-gray-900 rounded-xl p-5 border border-gray-700">
-              <div className="text-3xl mb-2">{stat.icon}</div>
-              <div className="text-2xl font-bold text-white">{stat.value}</div>
-              <div className="text-gray-400 text-sm mt-1">{stat.label}</div>
+            <div key={i} style={{
+              background: 'var(--bg-card)',
+              borderRadius: '16px',
+              padding: '20px',
+              border: '1px solid var(--border-color)',
+            }}>
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>{stat.icon}</div>
+              <div style={{ fontSize: '28px', fontWeight: '700', color: stat.color, marginBottom: '4px' }}>
+                {stat.value}
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{stat.label}</div>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* ── Popular + Category ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
 
           {/* Popular Queries */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
-            <h2 className="text-lg font-bold mb-4">🔥 Popular Questions</h2>
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: '16px',
+            padding: '24px', border: '1px solid var(--border-color)'
+          }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px', marginTop: 0 }}>
+              🔥 Popular Questions
+            </h2>
             {popular.length === 0 ? (
-              <p className="text-gray-500 text-sm">No data yet. Start asking questions!</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
+                No data yet. Start asking questions!
+              </p>
             ) : (
-              <div className="space-y-3">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {popular.map((q, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <span className="text-blue-400 font-bold text-sm w-6">
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                      <span style={{ color: '#3B82F6', fontWeight: '700', fontSize: '12px', width: '24px', flexShrink: 0 }}>
                         #{i + 1}
                       </span>
-                      <span className="text-gray-300 text-sm truncate">
+                      <span style={{ color: 'var(--text-secondary)', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {q.question}
                       </span>
                     </div>
-                    <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full ml-2 shrink-0">
+                    <span style={{
+                      background: '#3B82F6', color: 'white',
+                      fontSize: '11px', padding: '2px 8px',
+                      borderRadius: '999px', flexShrink: 0
+                    }}>
                       {q.count}x
                     </span>
                   </div>
@@ -122,54 +181,82 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Category Distribution */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
-            <h2 className="text-lg font-bold mb-4">📂 Category Usage</h2>
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: '16px',
+            padding: '24px', border: '1px solid var(--border-color)'
+          }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px', marginTop: 0 }}>
+              📂 Category Usage
+            </h2>
             {Object.keys(categories).length === 0 ? (
-              <p className="text-gray-500 text-sm">No data yet!</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>No data yet!</p>
             ) : (
-              <div className="space-y-3">
-                {Object.entries(categories).map(([cat, data], i) => (
-                  <div key={i}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-300 capitalize">{cat}</span>
-                      <span className="text-gray-400">{data.count} ({data.percentage}%)</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {Object.entries(categories).map(([cat, data], i) => {
+                  const color = categoryColors[cat] || '#3B82F6'
+                  return (
+                    <div key={i}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '13px', textTransform: 'capitalize' }}>
+                          {cat}
+                        </span>
+                        <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
+                          {data.count} ({data.percentage}%)
+                        </span>
+                      </div>
+                      <div style={{ background: 'var(--bg-hover)', borderRadius: '999px', height: '8px' }}>
+                        <div style={{
+                          background: color,
+                          width: `${data.percentage}%`,
+                          height: '8px',
+                          borderRadius: '999px',
+                          transition: 'width 0.5s ease'
+                        }} />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full transition-all"
-                        style={{ width: `${data.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
 
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* ── Daily Activity + Info Gaps ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
 
           {/* Daily Activity */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
-            <h2 className="text-lg font-bold mb-4">📅 Daily Activity (Last 7 Days)</h2>
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: '16px',
+            padding: '24px', border: '1px solid var(--border-color)'
+          }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px', marginTop: 0 }}>
+              📅 Daily Activity (Last 7 Days)
+            </h2>
             {activity.length === 0 ? (
-              <p className="text-gray-500 text-sm">No data yet!</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>No data yet!</p>
             ) : (
-              <div className="space-y-2">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {activity.map((day, i) => {
                   const maxCount = Math.max(...activity.map(d => d.count)) || 1
                   const width = Math.max((day.count / maxCount) * 100, 2)
                   return (
-                    <div key={i} className="flex items-center gap-3">
-                      <span className="text-gray-400 text-xs w-12 shrink-0">{day.date}</span>
-                      <div className="flex-1 bg-gray-700 rounded-full h-4 relative">
-                        <div
-                          className="bg-green-500 h-4 rounded-full transition-all"
-                          style={{ width: `${width}%` }}
-                        />
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px', width: '44px', flexShrink: 0 }}>
+                        {day.date}
+                      </span>
+                      <div style={{ flex: 1, background: 'var(--bg-hover)', borderRadius: '999px', height: '16px' }}>
+                        <div style={{
+                          background: 'linear-gradient(90deg, #10B981, #06B6D4)',
+                          width: `${width}%`,
+                          height: '16px',
+                          borderRadius: '999px',
+                          transition: 'width 0.5s ease'
+                        }} />
                       </div>
-                      <span className="text-gray-300 text-xs w-6 text-right">{day.count}</span>
+                      <span style={{ color: 'var(--text-secondary)', fontSize: '12px', width: '20px', textAlign: 'right' }}>
+                        {day.count}
+                      </span>
                     </div>
                   )
                 })}
@@ -178,22 +265,37 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Information Gaps */}
-          <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
-            <h2 className="text-lg font-bold mb-2">⚠️ Information Gaps</h2>
-            <p className="text-gray-500 text-xs mb-4">
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: '16px',
+            padding: '24px', border: '1px solid var(--border-color)'
+          }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '4px', marginTop: 0 }}>
+              ⚠️ Information Gaps
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '11px', marginBottom: '16px', marginTop: 0 }}>
               Questions where chatbot gave fallback responses
             </p>
             {gaps.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-green-400 text-sm">✅ No gaps detected!</p>
-                <p className="text-gray-500 text-xs mt-1">Chatbot is answering all questions!</p>
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>✅</div>
+                <p style={{ color: '#10B981', fontSize: '14px', fontWeight: '600', margin: 0 }}>
+                  No gaps detected!
+                </p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px' }}>
+                  Chatbot is answering all questions correctly!
+                </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {gaps.map((gap, i) => (
-                  <div key={i} className="flex items-start gap-2 bg-red-900/20 border border-red-800 rounded-lg p-3">
-                    <span className="text-red-400 text-sm shrink-0">⚠️</span>
-                    <span className="text-gray-300 text-sm">{gap}</span>
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'flex-start', gap: '8px',
+                    background: 'rgba(239,68,68,0.08)',
+                    border: '1px solid rgba(239,68,68,0.2)',
+                    borderRadius: '10px', padding: '10px 12px'
+                  }}>
+                    <span style={{ color: '#EF4444', fontSize: '14px', flexShrink: 0 }}>⚠️</span>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>{gap}</span>
                   </div>
                 ))}
               </div>
@@ -202,12 +304,79 @@ export default function AnalyticsPage() {
 
         </div>
 
-        {/* Footer */}
-        <div className="mt-6 text-center text-gray-600 text-xs">
-          Last updated: {analytics?.generated_at ? new Date(analytics.generated_at).toLocaleString() : 'N/A'}
+        {/* ── Cache Stats ── */}
+        <CacheStats apiUrl={API_URL} />
+
+        {/* ── Footer ── */}
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '11px', marginTop: '24px', paddingBottom: '24px' }}>
+          Last updated: {analytics?.generated_at
+            ? new Date(analytics.generated_at).toLocaleString()
+            : 'N/A'}
         </div>
 
       </div>
+    </div>
+  )
+}
+
+// ── Cache Stats Component ──
+function CacheStats({ apiUrl }) {
+  const [cache, setCache] = useState(null)
+
+  useEffect(() => {
+    fetch(`${apiUrl}/api/cache/stats`)
+      .then(r => r.json())
+      .then(setCache)
+      .catch(() => {})
+  }, [])
+
+  if (!cache) return null
+
+  return (
+    <div style={{
+      background: 'var(--bg-card)', borderRadius: '16px',
+      padding: '24px', border: '1px solid var(--border-color)',
+      marginBottom: '20px'
+    }}>
+      <h2 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px', marginTop: 0 }}>
+        ⚡ Cache Performance
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+        {[
+          { label: "Cached Entries", value: cache.total_entries || 0, color: '#3B82F6' },
+          { label: "Total Hits", value: cache.total_hits || 0, color: '#10B981' },
+          { label: "Hit Rate", value: cache.hit_rate || '0%', color: '#F59E0B' },
+          { label: "TTL", value: `${cache.ttl_minutes || 60} min`, color: '#8B5CF6' },
+        ].map((s, i) => (
+          <div key={i} style={{
+            background: 'var(--bg-secondary)',
+            borderRadius: '12px', padding: '14px',
+            border: '1px solid var(--border-color)',
+            textAlign: 'center'
+          }}>
+            <div style={{ fontSize: '20px', fontWeight: '700', color: s.color }}>{s.value}</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {cache.top_queries && cache.top_queries.length > 0 && (
+        <div style={{ marginTop: '16px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '8px' }}>
+            Top Cached Queries:
+          </p>
+          {cache.top_queries.map((q, i) => (
+            <div key={i} style={{
+              display: 'flex', justifyContent: 'space-between',
+              padding: '6px 0',
+              borderBottom: '1px solid var(--border-color)'
+            }}>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>{q.query}</span>
+              <span style={{ color: '#3B82F6', fontSize: '12px' }}>{q.hits} hits</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -27,17 +27,23 @@ def get_overall_stats() -> dict:
         # Total sessions
         total_sessions = session_collection.count_documents({}) if session_collection else 0
 
-        # Messages today
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        # Messages today — use created_at string instead of timestamp
+        today_str = datetime.now().strftime("%Y-%m-%d")
         messages_today = chat_collection.count_documents({
-            "timestamp": {"$gte": today}
+            "created_at": {"$regex": f"^{today_str}"}
         })
 
-        # Messages this week
-        week_ago = datetime.now() - timedelta(days=7)
-        messages_week = chat_collection.count_documents({
-            "timestamp": {"$gte": week_ago}
-        })
+        # Messages this week — count last 7 days
+        messages_week = 0
+        for i in range(7):
+            day = datetime.now() - timedelta(days=i)
+            day_str = day.strftime("%Y-%m-%d")
+            count = chat_collection.count_documents({
+                "created_at": {"$regex": f"^{day_str}"}
+            })
+            messages_week += count
+
+        print(f"  [Analytics] Total: {total_messages}, Today: {messages_today}, Week: {messages_week}")
 
         return {
             "total_messages": total_messages,
@@ -48,9 +54,16 @@ def get_overall_stats() -> dict:
         }
 
     except Exception as e:
-        print(f"  [Analytics] Error: {e}")
-        return {}
-
+        print(f"  [Analytics] Stats error: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            "total_messages": 0,
+            "total_sessions": 0,
+            "messages_today": 0,
+            "messages_this_week": 0,
+            "generated_at": datetime.now().isoformat()
+        }
 
 # ══════════════════════════════════════════
 # GET POPULAR QUERIES
@@ -145,18 +158,15 @@ def get_daily_activity(days: int = 7) -> list:
         activity = []
         for i in range(days - 1, -1, -1):
             day = datetime.now() - timedelta(days=i)
-            day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
-            day_end = day.replace(hour=23, minute=59, second=59, microsecond=999999)
+            day_str = day.strftime("%Y-%m-%d")
 
+            # Use created_at string field instead of timestamp
             count = chat_collection.count_documents({
-                "timestamp": {
-                    "$gte": day_start,
-                    "$lte": day_end
-                }
+                "created_at": {"$regex": f"^{day_str}"}
             })
 
             activity.append({
-                "date": day_start.strftime("%b %d"),
+                "date": day.strftime("%b %d"),
                 "count": count
             })
 
@@ -165,7 +175,6 @@ def get_daily_activity(days: int = 7) -> list:
     except Exception as e:
         print(f"  [Analytics] Daily activity error: {e}")
         return []
-
 
 # ══════════════════════════════════════════
 # GET INFORMATION GAPS
