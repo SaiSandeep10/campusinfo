@@ -65,10 +65,11 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div style={{
+    <div className="analytics-page" style={{
       background: 'var(--bg-primary)',
       minHeight: '100vh',
-      overflowY: 'auto',
+      overflowY: 'scroll',
+      height: '100vh',
       color: 'var(--text-primary)',
       padding: '24px',
       fontFamily: 'Space Grotesk, sans-serif'

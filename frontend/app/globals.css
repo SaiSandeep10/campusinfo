@@ -24,9 +24,13 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: 'Space Grotesk', sans-serif;
-  overflow: hidden;
+  overflow: hidden;  /* chat page needs this */
 }
 
+/* Analytics page needs scroll */
+body:has(.analytics-page) {
+  overflow: auto !important;
+}
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
