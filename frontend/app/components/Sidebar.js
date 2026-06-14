@@ -74,6 +74,8 @@ export default function Sidebar({ activeCategory, onCategoryChange }) {
       {/* Footer */}
       <div className="p-3 border-t" style={{ borderColor: 'var(--border-color)' }}>
         <a href="/analytics"
+          target="_blank"
+          rel="noreferrer"
           className="flex items-center gap-2 w-full px-3 py-2.5 rounded-xl text-sm transition-all duration-200 mb-2"
           style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}
           onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-hover)'}

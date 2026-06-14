@@ -107,13 +107,14 @@ export default function AnalyticsPage() {
               🔄 Refresh
             </button>
             <a href="/"
+              onClick={() => window.close()}
               style={{
                 padding: '8px 16px', borderRadius: '10px', fontSize: '13px',
                 background: 'var(--bg-card)', color: 'var(--text-secondary)',
                 border: '1px solid var(--border-color)', textDecoration: 'none',
                 display: 'inline-flex', alignItems: 'center'
               }}>
-              ← Back to Chat
+              ← Close Analytics
             </a>
           </div>
         </div>

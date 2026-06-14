@@ -19,31 +19,57 @@ def get_overall_stats() -> dict:
         from backend.models.database import chat_collection, session_collection
 
         if chat_collection is None:
-            return {}
+            return {
+                "total_messages": 0,
+                "total_sessions": 0,
+                "messages_today": 0,
+                "messages_this_week": 0,
+                "generated_at": datetime.now().isoformat()
+            }
+
+        # Debug logs
+        print("\n========== ANALYTICS DEBUG ==========")
+        print("chat_collection:", chat_collection)
+        print("session_collection:", session_collection)
 
         # Total messages
         total_messages = chat_collection.count_documents({})
+        print("total_messages =", total_messages)
 
         # Total sessions
-        total_sessions = session_collection.count_documents({}) if session_collection else 0
+        if session_collection is not None:
+            total_sessions = session_collection.count_documents({})
+        else:
+            total_sessions = 0
 
-        # Messages today — use created_at string instead of timestamp
+        print("total_sessions =", total_sessions)
+
+        # Today's messages
         today_str = datetime.now().strftime("%Y-%m-%d")
+
         messages_today = chat_collection.count_documents({
             "created_at": {"$regex": f"^{today_str}"}
         })
 
-        # Messages this week — count last 7 days
+        print("messages_today =", messages_today)
+
+        # This week's messages
         messages_week = 0
+
         for i in range(7):
             day = datetime.now() - timedelta(days=i)
             day_str = day.strftime("%Y-%m-%d")
+
             count = chat_collection.count_documents({
                 "created_at": {"$regex": f"^{day_str}"}
             })
+
+            print(f"{day_str} -> {count}")
+
             messages_week += count
 
-        print(f"  [Analytics] Total: {total_messages}, Today: {messages_today}, Week: {messages_week}")
+        print("messages_this_week =", messages_week)
+        print("=====================================\n")
 
         return {
             "total_messages": total_messages,
@@ -54,9 +80,12 @@ def get_overall_stats() -> dict:
         }
 
     except Exception as e:
-        print(f"  [Analytics] Stats error: {e}")
+        print("\n❌ ANALYTICS ERROR ❌")
+        print(str(e))
+
         import traceback
         traceback.print_exc()
+
         return {
             "total_messages": 0,
             "total_sessions": 0,
@@ -64,7 +93,6 @@ def get_overall_stats() -> dict:
             "messages_this_week": 0,
             "generated_at": datetime.now().isoformat()
         }
-
 # ══════════════════════════════════════════
 # GET POPULAR QUERIES
 # ══════════════════════════════════════════
