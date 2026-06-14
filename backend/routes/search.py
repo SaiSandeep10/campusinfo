@@ -92,17 +92,40 @@ def build_filtered_query(query: str, category: str) -> str:
 # ══════════════════════════════════════════
 # MEDIA HELPER
 # ══════════════════════════════════════════
-def get_media(category: str) -> dict:
+def get_media(category: str, query: str = "") -> dict:
+    """Returns relevant media links based on category and query keywords"""
+
+    # Always show map if query has location keywords
+    location_keywords = [
+        "where", "location", "located", "find", "reach",
+        "directions", "map", "block", "building", "cell",
+        "canteen", "library", "hostel", "office", "room"
+    ]
+
+    query_lower = query.lower()
+    has_location_intent = any(kw in query_lower for kw in location_keywords)
+
+    # Base map for ANITS
+    ANITS_MAP = "https://maps.google.com/?q=ANITS+Visakhapatnam+Sangivalasa"
+
+    if has_location_intent or category == "locations":
+        return {
+            "map": ANITS_MAP
+        }
+
     media_map = {
-        "locations": {
-            "map": "https://maps.google.com/?q=ANITS+Visakhapatnam"
-        },
         "facilities": {
-            "images": ["https://www.anits.edu.in/images/library.jpg"]
+            "map": ANITS_MAP
+        },
+        "placements": {
+            "map": ANITS_MAP
+        },
+        "contacts": {
+            "map": ANITS_MAP
         },
     }
-    return media_map.get(category, {})
 
+    return media_map.get(category, {})
 
 # ══════════════════════════════════════════
 # RECOMMENDATIONS HELPER
@@ -196,7 +219,7 @@ async def advanced_search(request: Request, body: SearchRequest):
             query=body.query,
             category=category,
             timestamp=datetime.now().isoformat(),
-            media=get_media(category),
+            media=get_media(category,body.query),
             recommendations=get_recommendations(category)
         )
 
@@ -225,7 +248,7 @@ async def advanced_search(request: Request, body: SearchRequest):
         query=body.query,
         category=category,
         timestamp=datetime.now().isoformat(),
-        media=get_media(category),
+        media=get_media(category,body.query),
         recommendations=recommendations,
     )
 

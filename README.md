@@ -20,10 +20,10 @@ Built using **RAG (Retrieval-Augmented Generation)** architecture with semantic 
 
 | Service             | URL                                                                              |
 | ------------------- | -------------------------------------------------------------------------------- |
-| Frontend            | https://your-vercel-url.vercel.app                                               |
+| Frontend            | https://campusinfo.vercel.app                                               |
 | Backend API         | https://anits-campus-api-fvfaghdxgrdvd4ae.centralindia-01.azurewebsites.net      |
 | API Docs            | https://anits-campus-api-fvfaghdxgrdvd4ae.centralindia-01.azurewebsites.net/docs |
-| Analytics Dashboard | https://your-vercel-url.vercel.app/analytics                                     |
+| Analytics Dashboard | https://campusinfo.vercel.app/analytics                                     |
 
 ---
 
