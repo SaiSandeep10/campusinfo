@@ -91,7 +91,7 @@ def build_agent():
     # ── Step 3: Initialize Groq LLM ──
     try:
         llm = ChatGroq(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             api_key=api_key,
             temperature=0.3,
             max_tokens=1024
